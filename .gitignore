@@ -1,0 +1,27 @@
+# Build output and local machine files
+*.apk
+*.aab
+.gradle/
+build/
+app/.gradle/
+app/build/
+app/app/build/
+app/local.properties
+local.properties
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Not ours to publish: material extracted from Blackstar's software, their manual,
+# other people's projects, and third-party reference screenshots
+research/refs/
+research/architect-strings.txt
+research/architect-ui/
+research/idcore-v4-firmware-strings.txt
+research/manual/
+screen shot referece/
+
+# USB logs and screenshots from testing
+captures/
+tools/

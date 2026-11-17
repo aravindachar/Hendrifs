@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Core Tab Styles</title>
+<style>
+  :root {
+    --page: #f3f1ec; --ink: #1c1a1b; --muted: #6a6466; --line: #dcd6cc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --page: #0f0e0f; --ink: #eceae8; --muted: #9b9597; --line: #2b2829; }
+  }
+  :root[data-theme="dark"] { --page: #0f0e0f; --ink: #eceae8; --muted: #9b9597; --line: #2b2829; }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1180px; margin: 0 auto; padding: 36px 16px 80px; }
+  h1 { font-size: 30px; margin: 0 0 6px; letter-spacing: -.01em; }
+  .lede { color: var(--muted); max-width: 72ch; margin: 0 0 8px; }
+  h2 { font-size: 22px; margin: 56px 0 4px; }
+  h2 small { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-left: 8px; }
+  .why { color: var(--muted); max-width: 78ch; margin: 0 0 16px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; }
+  .tags span { border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; font-size: 12.5px; color: var(--muted); }
+  .frame { border-radius: 22px; padding: 12px; background: #000; box-shadow: 0 18px 40px rgba(0,0,0,.22); overflow: hidden; }
+  .screen { border-radius: 12px; overflow: hidden; min-height: 520px; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 16px; }
+  .pro-con { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 16px; margin-top: 16px; }
+  .pro-con div { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; font-size: 14px; }
+  .pro-con b { display: block; margin-bottom: 4px; }
+  .pro-con ul { margin: 0; padding-left: 18px; color: var(--muted); }
+
+  /* ---------- shared knob (SVG drawn by JS) ---------- */
+  .knob { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; width: 78px; user-select: none; }
+  .knob svg { width: 64px; height: 64px; cursor: ns-resize; touch-action: none; }
+  .knob .lab { font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; }
+  .knob .val { font-size: 12px; font-variant-numeric: tabular-nums; opacity: .8; }
+  .led { width: 10px; height: 10px; border-radius: 50%; display: inline-block; background: #3a3537; }
+  .led.r { background: #ff3b3b; box-shadow: 0 0 8px 2px rgba(255,59,59,.65); }
+  .led.g { background: #3dff7a; box-shadow: 0 0 8px 2px rgba(61,255,122,.6); }
+  .led.a { background: #ffb020; box-shadow: 0 0 8px 2px rgba(255,176,32,.6); }
+
+  /* ================= A: FACEPLATE ================= */
+  .A { background: #1e1b1c; color: #f2efed; font-family: "Segoe UI", Roboto, system-ui, sans-serif; }
+  .A .top { display: flex; align-items: center; gap: 14px; padding: 12px 18px; border-bottom: 1px solid #c8102e; flex-wrap: wrap; }
+  .A .brand { letter-spacing: .32em; font-weight: 600; font-size: 13px; }
+  .A .status { font-size: 12px; color: #9c9597; margin-left: auto; }
+  .A .status i { color: #3dff7a; font-style: normal; }
+  .A .wrap { display: grid; grid-template-columns: 210px 1fr; min-height: 470px; }
+  .A aside { background: #171415; border-right: 1px solid #2d2829; padding: 14px 12px; }
+  .A aside h5 { margin: 0 0 8px; font-size: 10.5px; letter-spacing: .2em; color: #9c9597; font-weight: 600; }
+  .A .patch { display: flex; align-items: center; gap: 8px; padding: 9px 10px; border-radius: 4px; font-size: 13px; cursor: pointer; }
+  .A .patch:hover { background: #241f21; }
+  .A .patch.on { background: #2c2627; box-shadow: inset 2px 0 0 #c8102e; }
+  .A .patch small { color: #8d8789; margin-left: auto; font-size: 11px; }
+  .A .tabs { display: flex; gap: 22px; padding: 0 18px; border-bottom: 1px solid #2d2829; font-size: 12px; letter-spacing: .18em; }
+  .A .tabs span { padding: 12px 0; color: #9c9597; cursor: pointer; }
+  .A .tabs span.on { color: #fff; box-shadow: inset 0 -2px 0 #c8102e; }
+  .A .plate { margin: 16px 18px; padding: 18px 16px 14px; border-radius: 6px;
+              background: linear-gradient(#2b2728, #1f1c1d); border: 1px solid #3a3435; box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
+  .A .row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 6px 4px; }
+  .A .sep { width: 1px; align-self: stretch; background: #3a3435; margin: 0 10px; }
+  .A .fxbtn { display: flex; flex-direction: column; align-items: center; gap: 7px; width: 58px; font-size: 10.5px; letter-spacing: .14em; }
+  .A .fxbtn button { width: 40px; height: 28px; border-radius: 4px; border: 1px solid #4a4345; background: linear-gradient(#3a3536, #232021); cursor: pointer; }
+  .A .sub { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin: 0 18px 18px; }
+  .A .card { background: #241f21; border: 1px solid #332d2f; border-radius: 6px; padding: 12px; }
+  .A .card h6 { margin: 0 0 8px; font-size: 11px; letter-spacing: .2em; display: flex; align-items: center; gap: 8px; }
+  .A .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
+  .A .chips span { font-size: 11px; border: 1px solid #4a4345; padding: 3px 8px; border-radius: 3px; color: #c9c3c5; }
+  .A .chips span.on { border-color: #c8102e; color: #fff; background: rgba(200,16,46,.18); }
+
+  /* ================= B: SIGNAL CHAIN ================= */
+  .B { background: #101317; color: #e9eef3; font-family: Inter, "Segoe UI", Roboto, system-ui, sans-serif; }
+  .B .top { display: flex; align-items: center; gap: 12px; padding: 14px 18px; flex-wrap: wrap; }
+  .B .preset { font-size: 20px; font-weight: 700; }
+  .B .preset small { display: block; font-size: 12px; font-weight: 500; color: #8c98a5; }
+  .B .pill { margin-left: auto; display: flex; gap: 6px; }
+  .B .pill span { background: #1d232b; border-radius: 999px; padding: 6px 12px; font-size: 12.5px; color: #b8c3cf; }
+  .B .chain { display: flex; align-items: center; gap: 0; padding: 18px; overflow-x: auto; }
+  .B .blk { flex: none; width: 120px; height: 96px; border-radius: 14px; background: #1b2129; border: 1px solid #27303a;
+            display: flex; flex-direction: column; justify-content: space-between; padding: 10px 12px; cursor: pointer; transition: .15s; }
+  .B .blk b { font-size: 13px; } .B .blk small { font-size: 11px; color: #8c98a5; }
+  .B .blk.sel { border-color: #3fb8ff; box-shadow: 0 0 0 3px rgba(63,184,255,.18); }
+  .B .blk.off { opacity: .45; }
+  .B .blk .dot { width: 8px; height: 8px; border-radius: 50%; background: #3fb8ff; align-self: flex-end; }
+  .B .blk.off .dot { background: #4a5562; }
+  .B .wire { flex: none; width: 26px; height: 2px; background: #2c3641; }
+  .B .io { flex: none; font-size: 11px; color: #8c98a5; letter-spacing: .12em; }
+  .B .editor { margin: 0 18px 18px; background: #161b21; border-radius: 16px; padding: 18px; border: 1px solid #222a33; }
+  .B .editor h4 { margin: 0 0 4px; font-size: 16px; display: flex; align-items: center; gap: 10px; }
+  .B .seg { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 14px; }
+  .B .seg span { background: #1f262e; padding: 6px 12px; border-radius: 999px; font-size: 12.5px; color: #b8c3cf; cursor: pointer; }
+  .B .seg span.on { background: #3fb8ff; color: #04121c; font-weight: 600; }
+  .B .krow { display: flex; flex-wrap: wrap; gap: 14px; }
+  .B .toggle { width: 42px; height: 24px; border-radius: 999px; background: #3fb8ff; position: relative; }
+  .B .toggle::after { content: ""; position: absolute; right: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; }
+  .B .bar { display: flex; gap: 8px; padding: 0 18px 18px; flex-wrap: wrap; }
+  .B .bar span { flex: 1; min-width: 90px; text-align: center; background: #1b2129; padding: 10px; border-radius: 12px; font-size: 13px; color: #b8c3cf; }
+  .B .bar span.on { background: #233344; color: #fff; box-shadow: inset 0 0 0 1px #3fb8ff; }
+
+  /* ================= C: STAGE ================= */
+  .C { background: #0a0a0a; color: #fff; font-family: "Bahnschrift", "DIN Alternate", "Segoe UI", Roboto, sans-serif; }
+  .C .top { display: flex; align-items: center; padding: 14px 18px; gap: 14px; flex-wrap: wrap; }
+  .C .big { font-size: 34px; font-weight: 700; letter-spacing: .02em; }
+  .C .meta { color: #9b9b9b; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; }
+  .C .tuner { margin-left: auto; display: flex; align-items: center; gap: 10px; color: #9b9b9b; font-size: 13px; }
+  .C .tuner b { font-size: 26px; color: #3dff7a; }
+  .C .pads { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; padding: 8px 18px; }
+  .C .pad { border-radius: 14px; background: #161616; border: 2px solid #262626; padding: 16px; min-height: 104px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; }
+  .C .pad .n { font-size: 13px; color: #8a8a8a; letter-spacing: .14em; }
+  .C .pad .t { font-size: 20px; font-weight: 700; }
+  .C .pad.on { border-color: #ff8a00; background: #1d140a; box-shadow: 0 0 24px rgba(255,138,0,.18); }
+  .C .fx { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; padding: 10px 18px 18px; }
+  .C .fxp { border-radius: 14px; padding: 14px; background: #161616; text-align: center; font-weight: 700; letter-spacing: .12em; cursor: pointer; border: 2px solid #262626; }
+  .C .fxp.on { border-color: #3dff7a; color: #3dff7a; }
+  .C .fxp small { display: block; color: #8a8a8a; font-weight: 500; letter-spacing: .06em; margin-top: 4px; }
+  .C .gain { display: flex; align-items: center; gap: 14px; padding: 0 18px 18px; }
+  .C .gain input { flex: 1; accent-color: #ff8a00; height: 34px; }
+  .C .gain b { width: 64px; text-align: right; font-size: 22px; }
+
+  /* ---------- tokens ---------- */
+  .tok { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px; }
+  .tok .t { border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .tok h4 { margin: 0 0 10px; font-size: 14px; }
+  .sw { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sw div { width: 64px; font-size: 11px; color: var(--muted); }
+  .sw i { display: block; height: 40px; border-radius: 8px; border: 1px solid var(--line); margin-bottom: 4px; }
+
+  @media (max-width: 760px) {
+    .A .wrap { grid-template-columns: 1fr; }
+    .A aside { border-right: 0; border-bottom: 1px solid #2d2829; display: flex; gap: 6px; overflow-x: auto; }
+    .A aside h5 { display: none; }
+    .A .patch { flex: none; }
+    .A .patch small { display: none; }
+    .A .sub { grid-template-columns: 1fr; }
+    .A .sep { display: none; }
+    .C .pads { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .C .fx { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Core Tab: three style directions</h1>
+  <p class="lede">Each option below is the same app, with the same controls, dressed in a different style. Each draws on design patterns
+    common in today's amp and modelling apps, not on any single app's screens. The knobs work: drag them up or down. Pick one, or mix parts.</p>
+
+  <!-- ========================= A ========================= -->
+  <h2>A · Faceplate <small>closest to Architect</small></h2>
+  <p class="why">The real amp panel on screen: round knobs, LEDs and MOD / DLY / REV buttons that behave like the hardware (off → red → green focus).
+    A patch list sits on the left, and the deeper Architect-only controls are in cards below. Desktop editors and remotes for amps tend to look like this.</p>
+  <div class="tags"><span>Hardware-faithful</span><span>Knob + LED</span><span>Patch sidebar</span><span>Charcoal + red rule</span><span>Dense, editor-like</span></div>
+  <div class="frame"><div class="screen A">
+    <div class="top"><span class="brand">CORE&nbsp;TAB</span><span class="status"><i>●</i> ID:Core Stereo 40 V4 · USB</span></div>
+    <div class="wrap">
+      <aside>
+        <h5>AMPLIFIER PATCHES</h5>
+        <div class="patch"><span class="led"></span>CLEAN ONE<small>Clean Warm</small></div>
+        <div class="patch"><span class="led"></span>CLEAN ARP<small>Clean Bright</small></div>
+        <div class="patch on"><span class="led r"></span>CRUNCH 80S<small>Crunch</small></div>
+        <div class="patch"><span class="led"></span>SUPER CRUNCH<small>Super Crunch</small></div>
+        <div class="patch"><span class="led"></span>LEAD<small>OD 1</small></div>
+        <div class="patch"><span class="led"></span>HIGH GAIN<small>OD 2</small></div>
+      </aside>
+      <div>
+        <div class="tabs"><span class="on">AMP</span><span>CABRIG</span><span>PATCHES</span><span>SETTINGS</span><span>TUNER</span></div>
+        <div class="plate">
+          <div class="row">
+            <div data-knob="A|VOICE|2|0|5|voice"></div>
+            <div data-knob="A|GAIN|70|0|127"></div>
+            <div data-knob="A|VOLUME|50|0|127"></div>
+            <div data-knob="A|ISF|64|0|127|isf"></div>
+            <div class="sep"></div>
+            <div class="fxbtn"><span class="led"></span><button aria-label="Modulation"></button>MOD</div>
+            <div class="fxbtn"><span class="led r"></span><button aria-label="Delay"></button>DLY</div>
+            <div class="fxbtn"><span class="led g"></span><button aria-label="Reverb"></button>REV</div>
+            <div class="sep"></div>
+            <div data-knob="A|TYPE|0|0|3|rev"></div>
+            <div data-knob="A|LEVEL|40|0|127"></div>
+            <div class="fxbtn"><span class="led a"></span><button aria-label="Tap"></button>TAP</div>
+            <div class="fxbtn"><span class="led"></span><button aria-label="Manual"></button>MANUAL</div>
+          </div>
+        </div>
+        <div class="sub">
+          <div class="card"><h6>TONE <small style="color:#8d8789;letter-spacing:.08em">ARCHITECT ONLY</small></h6>
+            <div class="row"><div data-knob="A|BASS|64|0|127"></div><div data-knob="A|MID|64|0|127"></div><div data-knob="A|TREBLE|64|0|127"></div></div></div>
+          <div class="card"><h6><span class="led r"></span>DELAY</h6>
+            <div class="chips"><span>Linear</span><span class="on">Analogue</span><span>Tape</span><span>Multi</span></div>
+            <div class="row"><div data-knob="A|FEEDBACK|10|0|31"></div><div data-knob="A|TIME|400|100|2000|ms"></div></div></div>
+          <div class="card"><h6><span class="led g"></span>REVERB</h6>
+            <div class="chips"><span class="on">Room</span><span>Hall</span><span>Spring</span><span>Plate</span></div>
+            <div class="row"><div data-knob="A|SIZE|12|0|31"></div><div data-knob="A|LEVEL|40|0|127"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+  <div class="pro-con">
+    <div><b>Good for</b><ul><li>Feels like your amp, so there's nothing new to learn</li><li>Every Architect control has a natural place</li><li>Best on the OnePlus Pad</li></ul></div>
+    <div><b>Watch out</b><ul><li>Dense on a phone: patches become a scrolling strip</li><li>Small knobs are harder to hit mid-song</li></ul></div>
+  </div>
+
+  <!-- ========================= B ========================= -->
+  <h2>B · Signal chain <small>modern modeller style</small></h2>
+  <p class="why">Your sound as a row of blocks: input → gate → amp → mod → delay → reverb → cab → out. Tap a block to edit it in a big panel below,
+    and tap its dot to switch it on or off. Most current modelling and smart-amp apps use this layout because it scales well from phone to tablet.</p>
+  <div class="tags"><span>Block chain</span><span>One editor at a time</span><span>Big touch targets</span><span>Cool blue accent</span><span>Phone-friendly</span></div>
+  <div class="frame"><div class="screen B">
+    <div class="top"><div class="preset">CRUNCH 80S<small>Patch 3 · Crunch · ID:Core Stereo 40 V4</small></div>
+      <div class="pill"><span>Save</span><span>Tuner</span><span>Library</span></div></div>
+    <div class="chain" id="chain">
+      <span class="io">IN</span><span class="wire"></span>
+      <div class="blk off" data-b="gate"><b>Gate</b><small>Off</small><span class="dot"></span></div><span class="wire"></span>
+      <div class="blk sel" data-b="amp"><b>Amp</b><small>Crunch · 5.5</small><span class="dot"></span></div><span class="wire"></span>
+      <div class="blk off" data-b="mod"><b>Mod</b><small>Phaser</small><span class="dot"></span></div><span class="wire"></span>
+      <div class="blk" data-b="dly"><b>Delay</b><small>Analogue 400ms</small><span class="dot"></span></div><span class="wire"></span>
+      <div class="blk" data-b="rev"><b>Reverb</b><small>Room</small><span class="dot"></span></div><span class="wire"></span>
+      <div class="blk" data-b="cab"><b>Cab</b><small>2x12 UK</small><span class="dot"></span></div><span class="wire"></span>
+      <span class="io">OUT</span>
+    </div>
+    <div class="editor">
+      <h4 id="ed-title">Amp <span class="toggle"></span></h4>
+      <div class="seg"><span>Clean Warm</span><span>Clean Bright</span><span class="on">Crunch</span><span>Super Crunch</span><span>OD 1</span><span>OD 2</span></div>
+      <div class="krow">
+        <div data-knob="B|GAIN|70|0|127"></div><div data-knob="B|VOLUME|50|0|127"></div><div data-knob="B|ISF|64|0|127|isf"></div>
+        <div data-knob="B|BASS|64|0|127"></div><div data-knob="B|MIDDLE|64|0|127"></div><div data-knob="B|TREBLE|64|0|127"></div>
+        <div data-knob="B|RESO|50|0|127"></div><div data-knob="B|PRESENCE|70|0|127"></div>
+      </div>
+    </div>
+    <div class="bar"><span>1 Clean One</span><span>2 Clean Arp</span><span class="on">3 Crunch 80s</span><span>4 Super Crunch</span><span>5 Lead</span><span>6 High Gain</span></div>
+  </div></div>
+  <div class="pro-con">
+    <div><b>Good for</b><ul><li>Shows the whole sound at a glance</li><li>Works the same on phone and tablet</li><li>Easy to grow: Cab, Gate and later features are just more blocks</li></ul></div>
+    <div><b>Watch out</b><ul><li>Looks less like your actual amp</li><li>Editing two effects at once needs two taps</li></ul></div>
+  </div>
+
+  <!-- ========================= C ========================= -->
+  <h2>C · Stage <small>play live, edit later</small></h2>
+  <p class="why">Huge patch pads, big effect switches, one fat gain slider and an always-on tuner readout. It's designed to be hit with
+    a thumb while holding the guitar, like the live or performance modes many amp apps offer. Pair it with A or B for deep editing.</p>
+  <div class="tags"><span>Performance mode</span><span>Giant targets</span><span>High contrast</span><span>Orange + green</span><span>Minimal</span></div>
+  <div class="frame"><div class="screen C">
+    <div class="top"><div><div class="big" id="c-name">CRUNCH 80S</div><div class="meta">Patch 3 · Crunch</div></div>
+      <div class="tuner">TUNER <b>A</b> +2¢</div></div>
+    <div class="pads" id="pads">
+      <div class="pad"><span class="n">1 · CLEAN WARM</span><span class="t">Clean One</span></div>
+      <div class="pad"><span class="n">2 · CLEAN BRIGHT</span><span class="t">Clean Arp</span></div>
+      <div class="pad on"><span class="n">3 · CRUNCH</span><span class="t">Crunch 80s</span></div>
+      <div class="pad"><span class="n">4 · SUPER CRUNCH</span><span class="t">Super Crunch</span></div>
+      <div class="pad"><span class="n">5 · OD 1</span><span class="t">Lead</span></div>
+      <div class="pad"><span class="n">6 · OD 2</span><span class="t">High Gain</span></div>
+    </div>
+    <div class="fx" id="cfx">
+      <div class="fxp">MOD<small>Phaser</small></div>
+      <div class="fxp on">DELAY<small>Analogue</small></div>
+      <div class="fxp on">REVERB<small>Room</small></div>
+      <div class="fxp">TAP<small>120 BPM</small></div>
+    </div>
+    <div class="gain"><span class="meta">GAIN</span><input type="range" min="0" max="100" value="55" id="cg" aria-label="Gain"><b id="cgv">5.5</b></div>
+  </div></div>
+  <div class="pro-con">
+    <div><b>Good for</b><ul><li>Switching sounds mid-song</li><li>Readable from a music stand</li><li>Hard to bump a control by accident</li></ul></div>
+    <div><b>Watch out</b><ul><li>Not for deep editing on its own</li><li>Best as a second mode next to A or B</li></ul></div>
+  </div>
+
+  <!-- ========================= tokens ========================= -->
+  <h2>Building blocks</h2>
+  <p class="why">Whichever you pick, the app shares these: one knob component (drag up or down, the arc shows the value), LEDs that copy the amp's
+    meaning (red = on, green = focused, amber = tempo), and a dark stage-friendly palette.</p>
+  <div class="tok">
+    <div class="t"><h4>A · Faceplate palette</h4><div class="sw">
+      <div><i style="background:#1e1b1c"></i>#1E1B1C bg</div><div><i style="background:#2b2728"></i>#2B2728 plate</div>
+      <div><i style="background:#c8102e"></i>#C8102E accent</div><div><i style="background:#f2efed"></i>#F2EFED text</div></div></div>
+    <div class="t"><h4>B · Chain palette</h4><div class="sw">
+      <div><i style="background:#101317"></i>#101317 bg</div><div><i style="background:#1b2129"></i>#1B2129 block</div>
+      <div><i style="background:#3fb8ff"></i>#3FB8FF accent</div><div><i style="background:#e9eef3"></i>#E9EEF3 text</div></div></div>
+    <div class="t"><h4>C · Stage palette</h4><div class="sw">
+      <div><i style="background:#0a0a0a"></i>#0A0A0A bg</div><div><i style="background:#161616"></i>#161616 pad</div>
+      <div><i style="background:#ff8a00"></i>#FF8A00 patch</div><div><i style="background:#3dff7a"></i>#3DFF7A fx / tune</div></div></div>
+    <div class="t"><h4>LED language (from the amp)</h4>
+      <p style="margin:0;display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-size:13.5px">
+        <span><span class="led"></span> off</span><span><span class="led r"></span> on</span>
+        <span><span class="led g"></span> focused / in tune</span><span><span class="led a"></span> tap tempo</span></p></div>
+  </div>
+</main>
+
+<script>
+/* One knob, three skins. Drag up/down (or use arrow keys) to change. */
+const VOICES = ["Clean Warm","Clean Bright","Crunch","Super Crunch","OD 1","OD 2"];
+const REV = ["Room","Hall","Spring","Plate"];
+const SKIN = {
+  A: { track:"#3a3435", arc:"#c8102e", body:["#4a4446","#141112"], ptr:"#ffffff", text:"#f2efed" },
+  B: { track:"#27303a", arc:"#3fb8ff", body:["#2a333d","#12171d"], ptr:"#e9eef3", text:"#e9eef3" },
+};
+function fmt(v, min, max, kind) {
+  if (kind === "voice") return VOICES[v];
+  if (kind === "rev") return REV[v];
+  if (kind === "ms") return v + " ms";
+  if (kind === "isf") return v < 43 ? "USA " + (v*10/127).toFixed(1) : v > 84 ? "UK " + (v*10/127).toFixed(1) : (v*10/127).toFixed(1);
+  return max === 127 ? (v*10/127).toFixed(1) : String(v);
+}
+function drawKnob(host) {
+  const [skin, label, val, min, max, kind] = host.dataset.knob.split("|");
+  const s = SKIN[skin]; let v = +val; const lo = +min, hi = +max;
+  host.className = "knob";
+  host.innerHTML = `<svg viewBox="0 0 64 64" role="slider" tabindex="0" aria-label="${label}" aria-valuemin="${lo}" aria-valuemax="${hi}"></svg>
+    <span class="lab" style="color:${s.text}">${label}</span><span class="val" style="color:${s.text}"></span>`;
+  const svg = host.querySelector("svg"), out = host.querySelector(".val");
+  const arc = (a0, a1, r) => { const p = a => [32 + r*Math.cos(a), 32 + r*Math.sin(a)];
+    const [x0,y0] = p(a0), [x1,y1] = p(a1); return `M${x0} ${y0} A${r} ${r} 0 ${a1-a0 > Math.PI ? 1 : 0} 1 ${x1} ${y1}`; };
+  function paint() {
+    const f = (v - lo) / (hi - lo), a0 = 0.75*Math.PI, a1 = a0 + f*1.5*Math.PI, end = a0 + 1.5*Math.PI;
+    const id = "g" + Math.random().toString(36).slice(2,7);
+    svg.innerHTML = `<defs><radialGradient id="${id}" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="${s.body[0]}"/><stop offset="1" stop-color="${s.body[1]}"/></radialGradient></defs>
+      <path d="${arc(a0,end,28)}" stroke="${s.track}" stroke-width="4" fill="none" stroke-linecap="round"/>
+      ${f > 0.001 ? `<path d="${arc(a0,a1,28)}" stroke="${s.arc}" stroke-width="4" fill="none" stroke-linecap="round"/>` : ""}
+      <circle cx="32" cy="32" r="21" fill="url(#${id})" stroke="#000" stroke-opacity=".6"/>
+      <line x1="${32+7*Math.cos(a1)}" y1="${32+7*Math.sin(a1)}" x2="${32+18*Math.cos(a1)}" y2="${32+18*Math.sin(a1)}" stroke="${s.ptr}" stroke-width="3" stroke-linecap="round"/>`;
+    svg.setAttribute("aria-valuenow", v); svg.setAttribute("aria-valuetext", fmt(v,lo,hi,kind));
+    out.textContent = fmt(v, lo, hi, kind);
+  }
+  let y0 = 0, v0 = 0;
+  svg.addEventListener("pointerdown", e => { svg.setPointerCapture(e.pointerId); y0 = e.clientY; v0 = v; });
+  svg.addEventListener("pointermove", e => { if (!svg.hasPointerCapture(e.pointerId)) return;
+    v = Math.round(Math.min(hi, Math.max(lo, v0 + (y0 - e.clientY) * (hi - lo) / 180))); paint(); });
+  svg.addEventListener("keydown", e => { const step = Math.max(1, Math.round((hi-lo)/50));
+    if (e.key === "ArrowUp" || e.key === "ArrowRight") v = Math.min(hi, v + step);
+    else if (e.key === "ArrowDown" || e.key === "ArrowLeft") v = Math.max(lo, v - step); else return;
+    e.preventDefault(); paint(); });
+  paint();
+}
+document.querySelectorAll("[data-knob]").forEach(drawKnob);
+
+/* A: effect buttons cycle off → on (red) → focused (green) → off, like the amp */
+document.querySelectorAll(".A .fxbtn button").forEach(b => b.addEventListener("click", () => {
+  const led = b.previousElementSibling; const lab = b.parentElement.textContent.trim();
+  if (lab === "TAP" || lab === "MANUAL") { led.classList.toggle(lab === "TAP" ? "a" : "r"); return; }
+  if (led.classList.contains("g")) { led.className = "led"; return; }
+  document.querySelectorAll(".A .fxbtn .led.g").forEach(x => x.className = "led r");
+  led.className = led.classList.contains("r") ? "led g" : "led g";
+}));
+document.querySelectorAll(".A .patch").forEach(p => p.addEventListener("click", () => {
+  document.querySelectorAll(".A .patch").forEach(x => { x.classList.remove("on"); x.querySelector(".led").className = "led"; });
+  p.classList.add("on"); p.querySelector(".led").className = "led r"; }));
+document.querySelectorAll(".A .tabs span").forEach(t => t.addEventListener("click", () => {
+  document.querySelectorAll(".A .tabs span").forEach(x => x.classList.toggle("on", x === t)); }));
+document.querySelectorAll(".A .chips span").forEach(c => c.addEventListener("click", () => {
+  c.parentElement.querySelectorAll("span").forEach(x => x.classList.toggle("on", x === c)); }));
+
+/* B: tap a block to edit, tap its dot to toggle */
+document.querySelectorAll(".B .blk").forEach(b => b.addEventListener("click", e => {
+  if (e.target.classList.contains("dot")) { b.classList.toggle("off"); return; }
+  document.querySelectorAll(".B .blk").forEach(x => x.classList.toggle("sel", x === b));
+  document.getElementById("ed-title").firstChild.textContent = b.querySelector("b").textContent + " ";
+}));
+document.querySelectorAll(".B .seg span, .B .bar span").forEach(c => c.addEventListener("click", () => {
+  c.parentElement.querySelectorAll("span").forEach(x => x.classList.toggle("on", x === c)); }));
+
+/* C: pads and fx */
+document.querySelectorAll(".C .pad").forEach(p => p.addEventListener("click", () => {
+  document.querySelectorAll(".C .pad").forEach(x => x.classList.toggle("on", x === p));
+  document.getElementById("c-name").textContent = p.querySelector(".t").textContent.toUpperCase();
+  document.querySelector(".C .meta").textContent = "Patch " + p.querySelector(".n").textContent.replace(" · ", " · ").replace(/^(\d)/, "$1");
+}));
+document.querySelectorAll(".C .fxp").forEach(f => f.addEventListener("click", () => f.classList.toggle("on")));
+document.getElementById("cg").addEventListener("input", e => document.getElementById("cgv").textContent = (e.target.value/10).toFixed(1));
+</script>
+</body>
+</html>

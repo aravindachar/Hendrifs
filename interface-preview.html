@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Core Tab Preview</title>
+<style>
+  :root {
+    --page: #f4f1ea; --ink: #1d1b20; --muted: #6b6672; --line: #d9d3c7;
+    --bg: #141218; --card: #2b2930; --text: #e6e0e9; --dim: #cac4d0;
+    --accent: #ffc107; --track: #49454f; --chip-sel: #4a4458;
+    --green: #81c784; --red: #e57373; --blue: #64b5f6; --orange: #ffb74d;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --page: #0d0c10; --ink: #ece8f0; --muted: #9d97a6; --line: #2c2a31; }
+  }
+  :root[data-theme="dark"] { --page: #0d0c10; --ink: #ece8f0; --muted: #9d97a6; --line: #2c2a31; }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink);
+         font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1240px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 28px; margin: 0 0 4px; }
+  .lede { color: var(--muted); margin: 0 0 20px; max-width: 70ch; }
+  .switch { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; margin-bottom: 20px; }
+  .switch button { border: 0; background: none; color: var(--ink); padding: 6px 16px; border-radius: 999px; cursor: pointer; font: inherit; }
+  .switch button.on { background: var(--ink); color: var(--page); }
+
+  /* ---------- device frame ---------- */
+  .stage { display: flex; justify-content: center; overflow-x: auto; padding-bottom: 8px; }
+  .device { background: #000; border-radius: 28px; padding: 14px; box-shadow: 0 20px 50px rgba(0,0,0,.25); flex: none; min-width: 0; }
+  .device.tablet { width: min(1100px, 100%); }
+  .device.phone  { width: 390px; max-width: 100%; border-radius: 40px; }
+  .screen { background: var(--bg); color: var(--text); border-radius: 16px; overflow: hidden;
+            height: 680px; display: flex; flex-direction: column; font-family: Roboto, system-ui, sans-serif; }
+  .phone .screen { height: 780px; border-radius: 28px; }
+
+  .status { display: flex; justify-content: space-between; padding: 8px 18px 0; font-size: 12px; color: var(--dim); }
+  header.app { padding: 8px 18px 10px; }
+  header.app h2 { margin: 0; font-size: 22px; color: var(--text); }
+  .link { font-size: 12.5px; margin: 2px 0 8px; }
+  .link.on { color: var(--green); } .link.off { color: var(--red); }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .btn { border-radius: 999px; padding: 8px 18px; font: 500 14px Roboto, system-ui, sans-serif; cursor: pointer;
+         border: 1px solid #938f99; background: transparent; color: var(--text); }
+  .btn.fill { background: var(--accent); border-color: var(--accent); color: #2a2000; }
+  .btn:disabled { opacity: .38; cursor: default; }
+
+  .tabs { display: flex; border-bottom: 1px solid var(--track); }
+  .tabs button { flex: 1; background: none; border: 0; color: var(--accent); padding: 12px; font: 500 15px Roboto, system-ui, sans-serif;
+                 cursor: pointer; border-bottom: 3px solid transparent; }
+  .tabs button.on { border-bottom-color: var(--accent); }
+
+  .body { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+  .body > * { flex: none; }          /* cards keep their height and the area scrolls */
+  .body[hidden] { display: none; }
+  .card { background: var(--card); border-radius: 12px; padding: 14px 16px; }
+  .card h3 { margin: 0 0 10px; font-size: 16px; color: var(--text); display: flex; align-items: center; justify-content: space-between; }
+  .chip { border: 1px solid #938f99; background: none; color: var(--dim); border-radius: 8px; padding: 6px 14px;
+          font: 500 14px Roboto, system-ui, sans-serif; cursor: pointer; white-space: nowrap; }
+  .chip.on { background: var(--chip-sel); border-color: var(--chip-sel); color: var(--text); }
+
+  .knobs { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 0 28px; }
+  .phone .knobs { grid-template-columns: 1fr; }
+  .knob { display: grid; grid-template-columns: 110px 1fr 58px; align-items: center; gap: 8px; min-height: 40px; }
+  .phone .knob { grid-template-columns: 80px 1fr 58px; }
+  .knob span { color: var(--text); }
+  .knob b { text-align: right; color: var(--text); }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+  .hint { font-size: 11.5px; color: var(--dim); margin-top: 6px; }
+
+  .fx { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+  .knob input { min-width: 0; }
+  .phone .fx { grid-template-columns: 1fr; }
+  .fx .knob { grid-template-columns: 72px 1fr 58px; }
+  .toggle { width: 46px; height: 26px; border-radius: 999px; border: 2px solid #938f99; background: transparent; position: relative; cursor: pointer; flex: none; }
+  .toggle::after { content: ""; position: absolute; top: 4px; left: 4px; width: 14px; height: 14px; border-radius: 50%; background: #938f99; transition: .15s; }
+  .toggle.on { background: var(--accent); border-color: var(--accent); }
+  .toggle.on::after { left: 22px; width: 18px; height: 18px; top: 2px; background: #3a1e6e; }
+
+  .console input { width: 100%; background: transparent; border: 1px solid #938f99; border-radius: 6px; color: var(--text);
+                   padding: 12px; font: 15px ui-monospace, Consolas, monospace; }
+  .log { font: 12.5px/1.7 ui-monospace, Consolas, monospace; }
+  .log div { white-space: pre-wrap; word-break: break-all; }
+  .o { color: var(--blue); } .i { color: var(--green); } .u { color: var(--orange); }
+  .count { font-size: 12px; color: var(--dim); }
+
+  /* ---------- notes + screenshots ---------- */
+  section.notes { margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .note { border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .note h4 { margin: 0 0 6px; font-size: 15px; }
+  .note p { margin: 0; color: var(--muted); font-size: 14px; }
+  h2.sec { margin: 44px 0 4px; font-size: 20px; }
+  h3.group { margin: 20px 0 0; font-size: 15px; color: var(--muted); font-weight: 600; }
+  .shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 16px; margin-top: 10px; }
+  .shots.phones { grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); max-width: 760px; }
+  .shots figure { margin: 0; }
+  .shots img { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); display: block; background: #000; }
+  .shots figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  @media (max-width: 760px) { .screen { height: 640px; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Core Tab: interface preview</h1>
+  <p class="lede">A clickable copy of the Android app's two screens, Amp and Console, running against the same simulated amp the app's
+    <em>Demo amp</em> button uses. Switch between tablet and phone to see how the layout adapts. Real emulator screenshots are at the bottom.</p>
+
+  <div class="switch" role="tablist">
+    <button class="on" data-dev="tablet">Tablet (OnePlus Pad)</button>
+    <button data-dev="phone">Phone</button>
+  </div>
+
+  <div class="stage">
+    <div class="device tablet" id="device">
+      <div class="screen">
+        <div class="status"><span>10:50</span><span>▾ ◢ ▮</span></div>
+        <header class="app">
+          <h2>Core Tab</h2>
+          <div class="link off" id="link">○ Not connected</div>
+          <div class="row">
+            <button class="btn fill" id="usb">Connect USB</button>
+            <button class="btn" id="demo">Demo amp</button>
+            <button class="btn" id="refresh" disabled>Refresh</button>
+          </div>
+        </header>
+        <div class="tabs">
+          <button class="on" data-tab="amp">Amp</button>
+          <button data-tab="console">Console</button>
+        </div>
+        <div class="body" id="amp"></div>
+        <div class="body console" id="console" hidden></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="notes">
+    <div class="note"><h4>Patches and voice</h4><p>Six patch buttons with the names read from the amp, and the six voices. On a phone they wrap onto more lines.</p></div>
+    <div class="note"><h4>Amp knobs</h4><p>Gain, volume, ISF, bass, middle, treble. Shown 0–10 like the real knobs; the amp itself uses 0–127.</p></div>
+    <div class="note"><h4>Effects</h4><p>Modulation, delay and reverb, each with an on/off switch, a type and its levels. Side by side on a tablet, stacked on a phone.</p></div>
+    <div class="note"><h4>Console</h4><p>Every packet sent (blue) and received (green); unknown ones are orange. This is how we will confirm the V4's commands.</p></div>
+  </section>
+
+  <h2 class="sec">Real screenshots from the emulators</h2>
+  <p class="lede">Taken from the built APK in demo mode on the Pixel Tablet and Pixel 8 emulators.</p>
+  <h3 class="group">Tablet</h3>
+  <div class="shots">
+    <figure><img src="captures/screens/tablet-amp-top.png" alt="Tablet, Amp tab, top"><figcaption>Amp tab: patches, voice, amp</figcaption></figure>
+    <figure><img src="captures/screens/tablet-amp.png" alt="Tablet, Amp tab, effects"><figcaption>Amp tab: effects</figcaption></figure>
+    <figure><img src="captures/screens/tablet-console.png" alt="Tablet, Console tab"><figcaption>Console tab</figcaption></figure>
+  </div>
+  <h3 class="group">Phone</h3>
+  <div class="shots phones">
+    <figure><img src="captures/screens/phone-patch4.png" alt="Phone, Amp tab"><figcaption>Amp tab, patch 4 selected</figcaption></figure>
+    <figure><img src="captures/screens/phone-amp-effects.png" alt="Phone, effects"><figcaption>Phone · effects</figcaption></figure>
+    <figure><img src="captures/screens/phone-console.png" alt="Phone, Console"><figcaption>Phone · Console tab</figcaption></figure>
+  </div>
+</main>
+
+<script>
+/* ---- the same simulated amp and protocol the app uses ---- */
+const VOICES = ["Clean Warm","Clean Bright","Crunch","Super Crunch","OD1","OD2"];
+const NAMES = ["CLEAN ONE","CLEAN ARP","CRUNCH 80S","SUPER CRUNCH","LEAD","HIGH GAIN"];
+const C = { voice:1, gain:2, volume:3, bass:4, middle:5, treble:6, isf:7, mod_on:0x0F, delay_on:0x10, reverb_on:0x11,
+  mod_type:0x12, mod_depth:0x13, mod_level:0x15, mod_speed:0x16, delay_type:0x17, delay_feedback:0x18,
+  delay_level:0x1A, delay_time:0x1B, reverb_type:0x1D, reverb_size:0x1E, reverb_level:0x20 };
+const MAX = { voice:5, mod_on:1, delay_on:1, reverb_on:1, mod_type:3, delay_type:3, reverb_type:3, mod_depth:31, delay_feedback:31, reverb_size:31 };
+const MIN = { delay_time:100 };
+const maxOf = k => k === "delay_time" ? 2000 : (MAX[k] ?? 127);
+
+let connected = false, slot = null, tab = "amp", log = [];
+let v = {};
+const fresh = () => ({ voice:2, gain:70, volume:50, bass:64, middle:64, treble:64, isf:64, mod_on:0, delay_on:0, reverb_on:1,
+  mod_type:0, mod_depth:0, mod_level:0, mod_speed:0, delay_type:0, delay_feedback:0, delay_level:0, delay_time:400,
+  reverb_type:0, reverb_size:0, reverb_level:40 });
+
+const hex = a => a.map(b => b.toString(16).toUpperCase().padStart(2,"0")).join(" ");
+const now = () => { const d = new Date(); return d.toTimeString().slice(0,8) + "." + String(d.getMilliseconds()).padStart(3,"0"); };
+function push(out, bytes, note) { log.push({ t: now(), out, hex: hex(bytes), note }); if (log.length > 300) log.shift(); }
+function stateBytes() {
+  const p = new Array(48).fill(0); p[0]=3; p[1]=1; p[3]=0x2A;
+  for (const [k,id] of Object.entries(C)) { const val = v[k]; p[id+3] = val & 255; if (k === "delay_time") p[id+4] = val >> 8; }
+  let end = p.length; while (end > 4 && p[end-1] === 0) end--; return p.slice(0,end);
+}
+function connect() {
+  connected = true; v = fresh(); slot = null; tab = tab || "amp";
+  push(true, [0x81,0,0,4,3,6,2,0x7A], "");
+  for (let s=1;s<=6;s++) push(true, [2,4,s,0], "");
+  push(false, stateBytes(), "full state");
+  NAMES.forEach((n,i) => push(false, [2,4,i+1,0x15,...[...n].map(c=>c.charCodeAt(0))], `patch ${i+1} name "${n}"`));
+  render();
+}
+function set(k, val) {
+  val = Math.max(MIN[k] ?? 0, Math.min(maxOf(k), +val)); v[k] = val;
+  push(true, k === "delay_time" ? [3,C[k],0,2,val&255,val>>8] : [3,C[k],0,1,val], "");
+}
+function pickPatch(s) {
+  slot = s; push(true,[2,1,s,0],""); push(false,[2,6,s,0],`patch ${s} selected`);
+  v.voice = [0,1,2,3,4,5][s-1]; v.gain = [20,25,70,90,100,115][s-1]; push(false, stateBytes(), "full state"); render();
+}
+
+/* ---- rendering ---- */
+const el = (h) => { const t = document.createElement("template"); t.innerHTML = h.trim(); return t.content.firstChild; };
+const shown = (k,val) => k === "delay_time" ? val + "ms" : maxOf(k) === 127 ? (val*10/127).toFixed(1) : String(val);
+const knob = (label,k) => `<label class="knob"><span>${label}</span>
+  <input type="range" min="${MIN[k]??0}" max="${maxOf(k)}" value="${v[k]??(MIN[k]??0)}" data-k="${k}"><b id="o-${k}">${shown(k, v[k]??(MIN[k]??0))}</b></label>`;
+const chips = (list, sel, attr) => `<div class="row">${list.map((n,i)=>`<button class="chip${sel===i?" on":""}" ${attr}="${i}">${n}</button>`).join("")}</div>`;
+const fx = (title,on,type,types,knobs) => `<div class="card"><h3>${title}<button class="toggle${v[on]?" on":""}" data-tog="${on}" aria-label="${title} on/off"></button></h3>
+  ${chips(types, v[type]??0, `data-type="${type}" data-i`)}${knobs.map(([l,k])=>knob(l,k)).join("")}</div>`;
+
+function renderAmp() {
+  const names = connected ? NAMES : ["","","","","",""];
+  document.getElementById("amp").innerHTML = `
+    <div class="card"><h3>Patches</h3>${chips(names.map((n,i)=>`${i+1}${n?"&nbsp; "+n:""}`), (slot??0)-1, "data-patch")}</div>
+    <div class="card"><h3>Voice</h3>${chips(VOICES, v.voice ?? 0, "data-voice")}</div>
+    <div class="card"><h3>Amp</h3><div class="knobs">
+      ${knob("Gain","gain")}${knob("Bass","bass")}${knob("Volume","volume")}${knob("Middle","middle")}${knob("ISF","isf")}${knob("Treble","treble")}
+    </div><div class="hint">ISF: 0 = USA (tight, scooped) · 10 = UK (mid-forward)</div></div>
+    <div class="fx">
+      ${fx("Modulation","mod_on","mod_type",["Phaser","Flanger","Chorus","Tremolo"],[["Level","mod_level"],["Speed","mod_speed"],["Depth","mod_depth"]])}
+      ${fx("Delay","delay_on","delay_type",["Linear","Analogue","Tape","Multi"],[["Level","delay_level"],["Feedback","delay_feedback"],["Time","delay_time"]])}
+      ${fx("Reverb","reverb_on","reverb_type",["Room","Hall","Spring","Plate"],[["Level","reverb_level"],["Size","reverb_size"]])}
+    </div>`;
+}
+function renderConsole() {
+  const c = document.getElementById("console");
+  if (!c.dataset.built) {
+    c.innerHTML = `<input id="hexin" value="81 00 00 04 03 06 02 7A" aria-label="Hex packet">
+      <div class="row"><button class="btn fill" id="send">Send</button><button class="btn" id="clear">Clear</button><button class="btn" id="share">Share log</button></div>
+      <div class="count" id="count"></div><div class="log" id="log"></div>`;
+    c.dataset.built = 1;
+  }
+  document.getElementById("send").disabled = !connected;
+  document.getElementById("count").textContent = `${log.length} packets · newest first`;
+  document.getElementById("log").innerHTML = log.slice().reverse().map(l =>
+    `<div class="${l.out ? "o" : l.note === "UNKNOWN" ? "u" : "i"}">${l.t}  ${l.out ? "→" : "←"}  ${l.hex}${l.note ? "   · " + l.note : ""}</div>`).join("");
+}
+function render() {
+  const link = document.getElementById("link");
+  link.className = "link " + (connected ? "on" : "off");
+  link.textContent = connected ? "● Demo amp (simulated, no USB)" : "○ Not connected";
+  document.getElementById("refresh").disabled = !connected;
+  document.querySelectorAll(".tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
+  document.getElementById("amp").hidden = tab !== "amp";
+  document.getElementById("console").hidden = tab !== "console";
+  tab === "amp" ? renderAmp() : renderConsole();
+}
+
+/* ---- events ---- */
+document.getElementById("demo").onclick = connect;
+document.getElementById("usb").onclick = () => alert("In the browser preview there is no USB. On the tablet this opens the amp; here, use Demo amp.");
+document.getElementById("refresh").onclick = () => { push(true,[0x81,0,0,4,3,6,2,0x7A],""); push(false,stateBytes(),"full state"); render(); };
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => { tab = b.dataset.tab; render(); });
+document.querySelectorAll(".switch button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".switch button").forEach(x => x.classList.toggle("on", x === b));
+  document.getElementById("device").className = "device " + b.dataset.dev;
+});
+document.getElementById("amp").addEventListener("input", e => {
+  const k = e.target.dataset.k; if (!k) return;
+  if (!connected) { e.target.value = v[k] ?? 0; return; }
+  set(k, e.target.value); document.getElementById("o-"+k).textContent = shown(k, v[k]);
+});
+document.getElementById("amp").addEventListener("click", e => {
+  const t = e.target.closest("button"); if (!t || !connected) return;
+  if (t.dataset.patch !== undefined) pickPatch(+t.dataset.patch + 1);
+  else if (t.dataset.voice !== undefined) { set("voice", +t.dataset.voice); render(); }
+  else if (t.dataset.tog) { set(t.dataset.tog, v[t.dataset.tog] ? 0 : 1); render(); }
+  else if (t.dataset.type) { set(t.dataset.type, +t.dataset.i); render(); }
+});
+document.getElementById("console").addEventListener("click", e => {
+  if (e.target.id === "clear") { log = []; render(); }
+  else if (e.target.id === "share") alert("On the tablet this opens Android's share sheet with the log as text.");
+  else if (e.target.id === "send" && connected) {
+    const bytes = document.getElementById("hexin").value.trim().split(/[\s,]+/).filter(Boolean).map(x => parseInt(x.replace(/^0x/i,""),16));
+    if (bytes.some(isNaN) || bytes.length > 64) { alert("Bad hex: use bytes like 81 00 04"); return; }
+    push(true, bytes, "");
+    if (bytes[0] === 0x81) push(false, stateBytes(), "full state");
+    render();
+  }
+});
+// Small windows start in phone view.
+if (window.innerWidth < 700) document.querySelector('.switch button[data-dev="phone"]').click();
+render();
+// Open the page as interface-preview.html#live to start already connected to the demo amp.
+if (location.hash === "#live") connect();
+</script>
+</body>
+</html>

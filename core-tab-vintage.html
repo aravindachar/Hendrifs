@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Core Tab Vintage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600&family=Yellowtail&family=Playfair+Display+SC:wght@700;900&display=swap" rel="stylesheet">
+<style>
+@font-face { font-family: "DSEG14 Classic"; font-weight: 700; font-display: swap;
+  src: url("https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG14-Classic/DSEG14Classic-Bold.woff2") format("woff2"); }
+
+:root {
+  --page: #efe9dc; --page-ink: #1e1a14; --page-dim: #6d6253; --page-line: #d8cdb8;
+  --tolex: #121110; --piping: #e9dfc6;
+  --gold-1: #b48a35; --gold-2: #e7c76f; --gold-3: #c69d45; --gold-4: #f3dc93;
+  --engrave: #1b140a; --engrave-dim: #4a3a1c;
+  --cream: #efe6cf; --cream-dim: #a99d84;
+  --jewel: #ff2a1a; --vfd: #ffbe5c;
+  --led-on: #ff3322; --led-focus: #34ff7a;
+  --panel-font: "Oswald", "Arial Narrow", sans-serif;
+  --script: "Yellowtail", cursive;
+  --serif-sc: "Playfair Display SC", Georgia, serif;
+  --vfd-font: "DSEG14 Classic", "Oswald", monospace;
+  --brushed-gold:
+    linear-gradient(180deg, rgba(255,255,255,.38), rgba(255,255,255,0) 28%, rgba(0,0,0,.18) 100%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.07) 0 1px, rgba(0,0,0,.05) 1px 2px, transparent 2px 5px),
+    linear-gradient(90deg, var(--gold-1), var(--gold-2) 28%, var(--gold-3) 52%, var(--gold-4) 74%, var(--gold-1));
+  --tolex-bg: radial-gradient(rgba(255,255,255,.045) 1px, transparent 1.4px), radial-gradient(rgba(0,0,0,.6) 1px, transparent 1.5px);
+  --engraved: 0 1px 0 rgba(255,246,210,.6), 0 -1px 0 rgba(60,40,8,.35);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --page: #0d0b09; --page-ink: #efe6cf; --page-dim: #a3967c; --page-line: #2c261d; }
+}
+:root[data-theme="dark"] { --page: #0d0b09; --page-ink: #efe6cf; --page-dim: #a3967c; --page-line: #2c261d; }
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--page-ink); font: 300 17px/1.55 var(--panel-font); letter-spacing: .01em; }
+main { max-width: 1240px; margin: 0 auto; padding: 32px 16px 80px; }
+h1 { font: 400 54px/1 var(--script); margin: 0 0 8px; color: var(--gold-1); }
+.lede { color: var(--page-dim); max-width: 74ch; margin: 0 0 18px; }
+.devseg { display: inline-flex; border: 1px solid var(--page-line); border-radius: 999px; padding: 3px; margin-bottom: 20px; }
+.devseg button { border: 0; background: none; color: var(--page-ink); font: 500 15px/1 var(--panel-font); letter-spacing: .08em; text-transform: uppercase; padding: 7px 15px; border-radius: 999px; cursor: pointer; }
+.devseg button.on { background: var(--page-ink); color: var(--page); }
+
+/* ================= the cabinet that holds the app ================= */
+.stagearea { display: flex; justify-content: center; }
+.cab { width: min(1180px, 100%); min-width: 0; padding: 12px; border-radius: 30px; position: relative;
+  background-color: var(--tolex); background-image: var(--tolex-bg); background-size: 4px 4px, 3px 3px; background-position: 0 0, 1px 2px;
+  box-shadow: 0 34px 70px rgba(0,0,0,.45), inset 0 2px 0 rgba(255,255,255,.06); }
+.cab.phone { width: 410px; max-width: 100%; border-radius: 44px; }
+.cab::before { content: ""; position: absolute; inset: 7px; border-radius: 25px; border: 2px solid var(--piping); pointer-events: none; box-shadow: 0 0 0 1px rgba(0,0,0,.6); opacity: .9; }
+.cab.phone::before { border-radius: 38px; }
+.corner { position: absolute; width: 34px; height: 34px; z-index: 5; pointer-events: none;
+  background: radial-gradient(circle at 35% 35%, #d9d4c9, #6f6a62 60%, #2c2a27); clip-path: polygon(0 0, 100% 0, 100% 30%, 30% 30%, 30% 100%, 0 100%); border-radius: 10px 0 0 0; }
+.corner.tl { top: 0; left: 0; } .corner.tr { top: 0; right: 0; transform: scaleX(-1); }
+.corner.bl { bottom: 0; left: 0; transform: scaleY(-1); } .corner.br { bottom: 0; right: 0; transform: scale(-1,-1); }
+.phone .corner { display: none; }
+.screen { height: 820px; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; color: var(--cream); }
+.phone .screen { height: 860px; border-radius: 34px; }
+
+/* top */
+.top { display: flex; align-items: center; gap: 16px; padding: 18px 26px 4px; flex-wrap: wrap; }
+.logo { font: 400 44px/1 var(--script); padding-right: 6px;
+  background: linear-gradient(180deg, #fff1bf 0%, var(--gold-2) 45%, var(--gold-1) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 0 rgba(0,0,0,.8)); }
+.vfd { flex: 1; min-width: 240px; display: flex; align-items: center; gap: 10px; }
+.vfdwin { flex: 1; min-width: 0; height: 50px; border-radius: 8px; padding: 0 14px; display: flex; align-items: center; gap: 12px; position: relative; overflow: hidden;
+  background: linear-gradient(180deg, #1a0f06, #090502); border: 2px solid #2b2418; box-shadow: inset 0 3px 10px rgba(0,0,0,.9), 0 0 0 1px rgba(233,223,198,.25); }
+.vfdwin::after { content: ""; position: absolute; inset: 0; background: linear-gradient(170deg, rgba(255,255,255,.08), transparent 40%); pointer-events: none; }
+.vfdtxt { font: 700 19px/1 var(--vfd-font); color: var(--vfd); text-shadow: 0 0 3px rgba(255,170,70,.55), 0 0 10px rgba(255,140,40,.22); white-space: nowrap; letter-spacing: .02em; }
+.vfdsub { font: 700 13px/1 var(--serif-sc); letter-spacing: .16em; color: #9a7744; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.brassbtn { width: 40px; height: 40px; border-radius: 50%; border: 0; cursor: pointer; color: var(--engrave); font-size: 14px; flex: none;
+  background: radial-gradient(circle at 35% 30%, var(--gold-4), var(--gold-3) 55%, #7d5d22); box-shadow: 0 4px 8px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.5); }
+.status { display: flex; align-items: center; gap: 8px; font: 500 14px/1 var(--panel-font); letter-spacing: .12em; color: var(--cream-dim); text-transform: uppercase; }
+.status i { width: 9px; height: 9px; border-radius: 50%; background: var(--led-focus); box-shadow: 0 0 8px var(--led-focus); }
+.savebtn { height: 40px; padding: 0 18px; border-radius: 6px; border: 0; cursor: pointer; font: 600 15px/1 var(--panel-font); letter-spacing: .16em; color: var(--engrave);
+  background: linear-gradient(180deg, var(--gold-4), var(--gold-3)); box-shadow: 0 4px 10px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.6); }
+
+/* tabs: engraved words with a lamp under the live one */
+.tabs { display: flex; gap: 4px 26px; padding: 8px 28px 16px; overflow-x: auto; scrollbar-width: none; }
+.tabs button { flex: none; border: 0; background: none; cursor: pointer; padding: 4px 2px 14px; position: relative;
+  font: 500 16px/1 var(--panel-font); letter-spacing: .22em; color: var(--cream-dim); text-transform: uppercase; }
+.tabs button::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: #3a2a10; box-shadow: inset 0 1px 2px rgba(0,0,0,.6); }
+.tabs button.on { color: var(--gold-2); }
+.tabs button.on::after { background: radial-gradient(circle at 40% 35%, #fff2c8, #ffb02e 45%, #8a4b00); box-shadow: 0 0 10px 2px rgba(255,170,40,.55); }
+
+.page { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 4px 24px 30px; display: none; }
+.page.on { display: block; }
+.page > * + * { margin-top: 22px; }
+
+/* ================= shared hardware parts ================= */
+.plate { position: relative; border-radius: 10px; padding: 18px 22px 20px; color: var(--engrave); background: var(--brushed-gold);
+  box-shadow: 0 0 0 2px #1a1408, 0 0 0 4px rgba(233,223,198,.5), 0 18px 34px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.6); }
+.screw { position: absolute; width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff6d2, #9d7a33 60%, #4b3714); box-shadow: inset 0 0 0 1px rgba(0,0,0,.3); }
+.screw::after { content: ""; position: absolute; left: 2px; right: 2px; top: 5px; height: 2px; background: rgba(40,28,8,.7); transform: rotate(35deg); }
+.screw.steel { background: radial-gradient(circle at 35% 35%, #f2f2f2, #777 60%, #2a2a2a); }
+.screw.steel::after { background: rgba(0,0,0,.6); }
+.s-a { top: 8px; left: 8px; } .s-b { top: 8px; right: 8px; } .s-c { bottom: 8px; left: 8px; } .s-d { bottom: 8px; right: 8px; }
+.groupname { font: 700 13px/1 var(--serif-sc); letter-spacing: .26em; color: var(--engrave-dim); border-top: 1.5px solid var(--engrave-dim); padding-top: 7px; width: 100%; text-align: center; text-shadow: var(--engraved); }
+.sticker { display: inline-block; font: 600 11px/1.2 var(--panel-font); letter-spacing: .12em; text-transform: uppercase; color: #2a1f00; padding: 4px 8px; text-shadow: none;
+  background: linear-gradient(180deg, #ffe680, #f5cf3a); transform: rotate(-2deg); box-shadow: 0 3px 5px rgba(0,0,0,.45); }
+.jewel { width: 34px; height: 34px; border-radius: 50%; position: relative;
+  background: radial-gradient(circle at 40% 35%, #ffd0c8 0 8%, var(--jewel) 22%, #8d0b04 70%, #3d0401); box-shadow: 0 0 0 4px #c7c2b6, 0 0 0 6px #4c4741, 0 0 24px 6px rgba(255,40,20,.55); }
+.lamp { width: 16px; height: 16px; border-radius: 50%; flex: none; display: inline-block; background: radial-gradient(circle at 40% 35%, #b77, #5a1610 60%, #2a0804); box-shadow: 0 0 0 3px #c7c2b6, 0 0 0 5px #3b3833; }
+.lamp.red { background: radial-gradient(circle at 40% 35%, #ffd0c8 0 10%, var(--jewel) 35%, #7d0803); box-shadow: 0 0 0 3px #c7c2b6, 0 0 0 5px #3b3833, 0 0 18px 4px rgba(255,40,20,.6); }
+.lamp.green { background: radial-gradient(circle at 40% 35%, #e5ffee 0 10%, #2cf27a 35%, #0b6a2c); box-shadow: 0 0 0 3px #c7c2b6, 0 0 0 5px #3b3833, 0 0 18px 4px rgba(52,255,122,.5); }
+.lamp.dimgreen { background: radial-gradient(circle at 40% 35%, #8fa, #1d5a32 60%, #06200f); }
+
+/* toggle switch (bat lever) */
+.tsw { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; background: none; border: 0; padding: 0; color: inherit; }
+.tsw .bat { width: 22px; height: 52px; position: relative; border-radius: 11px; background: radial-gradient(circle at 50% 50%, #2a2010 0 6px, #0b0804 7px); box-shadow: inset 0 0 0 2px #7b5e22; }
+.tsw .bat::after { content: ""; position: absolute; left: 6px; width: 10px; height: 26px; border-radius: 5px; background: linear-gradient(90deg, #8f8f8f, #f2f2f2 45%, #8a8a8a); box-shadow: 0 2px 3px rgba(0,0,0,.6); top: 4px; transition: top .12s; }
+.tsw.down .bat::after { top: 22px; }
+.tsw .lbls { font: 600 12px/1.35 var(--panel-font); letter-spacing: .16em; text-align: center; text-shadow: var(--engraved); }
+.rear .tsw .bat { box-shadow: inset 0 0 0 2px #8d8d8d; }
+.rear .tsw .lbls { text-shadow: none; color: #e9e6df; text-transform: uppercase; }
+
+/* knobs */
+.vknob { display: flex; flex-direction: column; align-items: center; user-select: none; width: 104px; }
+.vknob svg { width: 104px; height: 104px; cursor: ns-resize; touch-action: none; outline: none; }
+.vknob svg:focus-visible, .rotary svg:focus-visible, .mknob svg:focus-visible { filter: drop-shadow(0 0 3px #fff); }
+.vknob .nm { font: 600 14px/1 var(--panel-font); letter-spacing: .22em; text-transform: uppercase; margin-top: -2px; text-shadow: var(--engraved); }
+.vknob .rd { font: 400 13px/1.5 var(--panel-font); letter-spacing: .12em; color: var(--engrave-dim); }
+.vknob.sm { width: 84px; } .vknob.sm svg { width: 84px; height: 84px; }
+.mknob { display: flex; flex-direction: column; align-items: center; width: 62px; user-select: none; }
+.mknob svg { width: 54px; height: 54px; cursor: ns-resize; touch-action: none; outline: none; }
+.mknob span { font: 500 12px/1.1 var(--panel-font); letter-spacing: .14em; text-transform: uppercase; text-align: center; }
+.rotary { display: flex; flex-direction: column; align-items: center; user-select: none; }
+.rotary svg { width: var(--rs, 170px); height: auto; touch-action: none; outline: none; cursor: grab; overflow: visible; }
+.rotary .rpos { cursor: pointer; font-family: Oswald, sans-serif; letter-spacing: .06em; }
+.rotary .rcap { font: 700 13px/1 var(--serif-sc); letter-spacing: .22em; margin-top: 2px; text-shadow: var(--engraved); text-align: center; }
+.rotary .rval { font: 500 13px/1.4 var(--panel-font); letter-spacing: .14em; text-transform: uppercase; opacity: .8; }
+.rear .rotary .rcap { text-shadow: none; }
+.silk { font: 500 12px/1.35 var(--panel-font); letter-spacing: .16em; text-transform: uppercase; color: #cfccc4; text-align: center; }
+
+/* ================= AMP: head + pedalboard ================= */
+.head { position: relative; border-radius: 16px; padding: 16px 16px 18px; margin-top: 14px;
+  background-color: #0e0d0c; background-image: var(--tolex-bg); background-size: 4px 4px, 3px 3px;
+  box-shadow: 0 24px 40px rgba(0,0,0,.7), inset 0 0 0 2px var(--piping), inset 0 0 0 4px #000; }
+.head .handle { position: absolute; left: 50%; top: -14px; width: 180px; height: 16px; margin-left: -90px; border-radius: 10px 10px 4px 4px;
+  background: linear-gradient(180deg, #2a2724, #0c0b0a); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 4px 8px rgba(0,0,0,.6); }
+.platerow { display: flex; align-items: flex-start; gap: 6px 4px; flex-wrap: wrap; justify-content: space-between; }
+.group { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.knobs { display: flex; gap: 2px 6px; flex-wrap: wrap; justify-content: center; }
+.toggles { display: flex; gap: 18px; align-items: flex-end; }
+.voicewin { display: flex; align-items: center; gap: 8px; }
+.voicewin .vfdwin { height: 44px; width: 210px; flex: none; padding: 0 10px; justify-content: center; }
+.voicewin .vfdtxt { font-size: 15px; }
+.voicewin .brassbtn { width: 32px; height: 32px; font-size: 12px; }
+.grille { height: 96px; border-radius: 8px; margin-top: 16px; position: relative; background-color: #2b2416;
+  background-image: repeating-linear-gradient(45deg, rgba(214,190,140,.55) 0 2px, transparent 2px 7px), repeating-linear-gradient(-45deg, rgba(120,98,58,.6) 0 2px, transparent 2px 7px), repeating-linear-gradient(45deg, rgba(0,0,0,.35) 0 1px, transparent 1px 14px);
+  box-shadow: inset 0 8px 18px rgba(0,0,0,.7), 0 0 0 2px var(--piping), 0 0 0 4px #0a0908; }
+.badge { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font: 400 34px/1 var(--script); padding: 4px 18px 8px; white-space: nowrap;
+  background: linear-gradient(180deg, #fff1bf, var(--gold-2) 50%, var(--gold-1)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 2px rgba(0,0,0,.9)); }
+
+/* pedalboard: carpet, aluminium rails, cables */
+.board { position: relative; border-radius: 10px; padding: 38px 30px 34px; margin-top: 34px;
+  background:
+    linear-gradient(180deg, transparent 0 24%, rgba(160,160,165,.14) 24% 25.5%, transparent 25.5% 74%, rgba(160,160,165,.14) 74% 75.5%, transparent 75.5%),
+    radial-gradient(rgba(255,255,255,.035) .8px, transparent 1.2px) 0 0 / 3px 3px,
+    linear-gradient(180deg, #22201d, #171513);
+  box-shadow: 0 0 0 6px #6c6d70, 0 0 0 7px #2b2c2e, inset 0 0 0 1px #000, 0 26px 40px rgba(0,0,0,.7); }
+.cables { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
+.pedals { position: relative; z-index: 2; display: flex; flex-direction: row-reverse; justify-content: center; align-items: flex-end; gap: 30px 54px; flex-wrap: wrap; }
+.pedal { position: relative; border-radius: 14px; padding: 16px 12px 18px; display: flex; flex-direction: column; align-items: center; gap: 10px; color: var(--pc-ink, #f4ecd8);
+  width: var(--w); transform: rotate(var(--rot)); background: radial-gradient(120% 80% at 30% 0%, rgba(255,255,255,.22), transparent 55%), var(--pc);
+  box-shadow: 0 16px 22px rgba(0,0,0,.7), 0 3px 0 rgba(0,0,0,.6), inset 0 2px 0 rgba(255,255,255,.25), inset 0 -4px 0 rgba(0,0,0,.35); }
+.pedal::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: .25; background-image: radial-gradient(rgba(255,255,255,.6) .6px, transparent 1px); background-size: 5px 5px; mix-blend-mode: overlay; }
+.pedal .jack { position: absolute; top: 30%; width: 14px; height: 22px; border-radius: 3px; background: linear-gradient(90deg, #555, #e6e6e6 50%, #6b6b6b); box-shadow: 0 2px 3px rgba(0,0,0,.6); }
+.pedal .jack.in { right: -13px; } .pedal .jack.out { left: -13px; }
+.pedal .dc { position: absolute; top: -9px; left: 50%; margin-left: -9px; width: 18px; height: 10px; border-radius: 3px 3px 0 0; background: linear-gradient(180deg, #3a3a3a, #111); }
+.pedal .pname { font: 400 32px/1 var(--script); text-shadow: 0 2px 0 rgba(0,0,0,.4); }
+.pedal .psub { font: 700 11px/1 var(--serif-sc); letter-spacing: .2em; opacity: .85; margin-top: -6px; }
+.pedal .pled { width: 11px; height: 11px; border-radius: 50%; background: #3a1410; box-shadow: inset 0 1px 2px rgba(0,0,0,.6), 0 0 0 2px rgba(0,0,0,.35); }
+.pedal .pled.r { background: var(--led-on); box-shadow: 0 0 10px 2px var(--led-on), 0 0 0 2px rgba(0,0,0,.35); }
+.pedal .pled.g { background: var(--led-focus); box-shadow: 0 0 10px 2px var(--led-focus), 0 0 0 2px rgba(0,0,0,.35); }
+.pedal .pknobs { display: flex; gap: 0 2px; justify-content: center; flex-wrap: wrap; }
+.types { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+.types button { border: 0; cursor: pointer; font: 500 12px/1 var(--panel-font); letter-spacing: .1em; text-transform: uppercase; padding: 6px 8px; border-radius: 4px; color: inherit; background: rgba(0,0,0,.22); opacity: .7; }
+.types button.on { opacity: 1; background: rgba(0,0,0,.5); box-shadow: inset 0 0 0 1px rgba(255,255,255,.4); }
+.focusnote { font: 600 11px/1 var(--panel-font); letter-spacing: .2em; color: var(--led-focus); visibility: hidden; margin-top: auto; }
+.pedal.focused .focusnote { visibility: visible; }
+.foot { width: 60px; height: 60px; border-radius: 50%; border: 0; cursor: pointer;
+  background: radial-gradient(circle at 40% 30%, #ffffff, #c9c9c9 30%, #6d6d6d 70%, #3b3b3b); box-shadow: 0 0 0 5px #2a2a2a, 0 0 0 7px #8d8d8d, 0 8px 14px rgba(0,0,0,.6); transition: transform .06s; }
+.foot:active { transform: scale(.95); }
+.boardlabel { position: absolute; right: 22px; bottom: 9px; font: 700 11px/1 var(--serif-sc); letter-spacing: .3em; color: #8c8a86; z-index: 2; }
+
+/* ================= PATCHES: channel selector + cassette shelf ================= */
+.channel { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px 30px; align-items: center; padding: 22px 30px 24px; }
+.chright { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.chwin { flex: none; height: 82px; justify-content: center; }
+.chwin .vfdtxt { font-size: 34px; }
+.chsub { display: flex; justify-content: center; gap: 14px; font: 700 14px/1 var(--serif-sc); letter-spacing: .2em; color: var(--engrave); text-shadow: var(--engraved); flex-wrap: wrap; }
+.presets { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border-top: 1.5px solid var(--engrave-dim); border-bottom: 1.5px solid var(--engrave-dim); }
+.preset { background: none; border: 0; cursor: pointer; padding: 12px 6px 10px; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--engrave); }
+.preset + .preset { border-left: 1.5px solid rgba(74,58,28,.55); }
+.preset .n { font: 700 12px/1 var(--serif-sc); letter-spacing: .2em; color: var(--engrave-dim); text-shadow: var(--engraved); }
+.preset .t { font: 500 15px/1.1 var(--panel-font); letter-spacing: .08em; text-transform: uppercase; text-align: center; text-shadow: var(--engraved); }
+
+.shelfhead { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.shelfhead h3 { margin: 0; font: 400 36px/1 var(--script); color: var(--gold-2); }
+.genres { display: flex; flex-wrap: wrap; gap: 4px 20px; margin-left: auto; }
+.genres button { border: 0; background: none; cursor: pointer; font: 500 14px/1 var(--panel-font); letter-spacing: .2em; text-transform: uppercase; color: var(--cream-dim); padding: 4px 0; }
+.genres button.on { color: var(--gold-2); box-shadow: 0 2px 0 var(--gold-2); }
+.shelf { position: relative; padding: 0 18px; }
+.tapes { display: flex; gap: 18px; overflow-x: auto; padding: 22px 6px 0; scrollbar-width: thin; align-items: flex-end; }
+.cass { flex: none; width: 200px; height: 126px; border-radius: 8px; position: relative; cursor: pointer; border: 0; padding: 0; transition: transform .2s;
+  background: linear-gradient(180deg, #34302b, #1d1a17); box-shadow: 0 10px 14px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.12), inset 0 0 0 1px rgba(0,0,0,.6); }
+.cass.sel { transform: translateY(-14px); }
+.cass .lbl { position: absolute; left: 12px; right: 12px; top: 10px; height: 74px; border-radius: 4px; text-align: left; padding: 6px 10px; color: var(--engrave);
+  background: linear-gradient(180deg, var(--cream) 0 50%, var(--stripe, #c0392b) 50% 58%, var(--cream) 58%); }
+.cass .lbl b { display: block; font: 500 15px/1.15 var(--panel-font); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cass .lbl i { display: block; font: 700 10px/1 var(--serif-sc); font-style: normal; letter-spacing: .16em; color: var(--engrave-dim); margin-top: 3px; }
+.cass .win { position: absolute; left: 50%; top: 54px; width: 104px; height: 26px; margin-left: -52px; border-radius: 13px; background: #0d0c0b; box-shadow: inset 0 2px 4px #000; }
+.cass .win::before, .cass .win::after { content: ""; position: absolute; top: 3px; width: 20px; height: 20px; border-radius: 50%;
+  background: radial-gradient(circle, #0d0c0b 0 3px, #d8d2c4 3.5px 6px, transparent 6.5px), conic-gradient(#d8d2c4 0 10%, transparent 10% 33%, #d8d2c4 33% 43%, transparent 43% 66%, #d8d2c4 66% 76%, transparent 76%); }
+.cass .win::before { left: 10px; } .cass .win::after { right: 10px; }
+.cass .holes { position: absolute; left: 50%; bottom: 0; width: 96px; margin-left: -48px; height: 22px; border-radius: 4px 4px 0 0; background: #141210; clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%); }
+.plank { height: 22px; margin: 0 -18px; border-radius: 3px;
+  background: repeating-linear-gradient(90deg, rgba(0,0,0,.08) 0 2px, transparent 2px 9px), linear-gradient(180deg, #8a5a2b, #5c3a18 60%, #3a230d);
+  box-shadow: 0 10px 18px rgba(0,0,0,.6), inset 0 2px 0 rgba(255,220,170,.25); }
+.shelfacts { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.shelfacts .sel-name { font: 500 17px/1 var(--panel-font); letter-spacing: .1em; text-transform: uppercase; color: var(--cream); margin-right: auto; }
+.ghost { height: 38px; border-radius: 6px; border: 1px solid rgba(233,223,198,.45); background: none; color: var(--cream); font: 600 13px/1 var(--panel-font); letter-spacing: .14em; cursor: pointer; text-transform: uppercase; padding: 0 14px; }
+
+/* ================= TUNER: rack unit ================= */
+.rack { position: relative; border-radius: 6px; padding: 34px 74px 28px; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 30px; align-items: center;
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 1px, transparent 1px 3px), linear-gradient(180deg, #303032, #151516);
+  box-shadow: 0 0 0 1px #000, 0 20px 34px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.14), inset 0 -2px 0 rgba(0,0,0,.6); }
+.rack .ear { position: absolute; top: 0; bottom: 0; width: 52px; background: linear-gradient(90deg, #3a3a3d, #1e1e20); }
+.rack .ear.l { left: 0; border-radius: 6px 0 0 6px; box-shadow: inset -1px 0 0 #000; } .rack .ear.r { right: 0; border-radius: 0 6px 6px 0; box-shadow: inset 1px 0 0 #000; }
+.rack .ear i { position: absolute; left: 50%; width: 22px; height: 12px; margin-left: -11px; border-radius: 6px; background: #050505; box-shadow: inset 0 2px 3px #000, 0 1px 0 rgba(255,255,255,.12); }
+.rack .ear i:first-child { top: 22px; } .rack .ear i:last-child { bottom: 22px; }
+.rack .silkname { position: absolute; left: 74px; top: 12px; font: 700 11px/1 var(--serif-sc); letter-spacing: .3em; color: #b9b6ae; }
+.rack svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 12px 18px rgba(0,0,0,.7)); }
+.tside { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.tside .vfdwin { flex: none; width: 100%; height: 64px; justify-content: center; }
+.tside .vfdtxt { font-size: 28px; }
+.tside .cap { font: 700 12px/1 var(--serif-sc); letter-spacing: .26em; color: #b9b6ae; }
+.lamps { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; font: 600 13px/1 var(--panel-font); letter-spacing: .2em; color: #cfccc4; }
+.lamps span { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+/* ================= CABRIG ================= */
+.cabrig { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 34px; align-items: center; padding-top: 8px; }
+.speakercab { aspect-ratio: 1 / 1; width: 100%; max-width: 380px; margin: 0 auto 14px; border-radius: 14px; padding: 16px; position: relative;
+  background-color: #0e0d0c; background-image: var(--tolex-bg); background-size: 4px 4px, 3px 3px;
+  box-shadow: 0 26px 40px rgba(0,0,0,.7), inset 0 0 0 2px var(--piping), inset 0 0 0 4px #000; }
+.speakercab .cloth { position: absolute; inset: 18px; border-radius: 8px; background-color: #2b2416;
+  background-image: repeating-linear-gradient(45deg, rgba(214,190,140,.55) 0 2px, transparent 2px 7px), repeating-linear-gradient(-45deg, rgba(120,98,58,.6) 0 2px, transparent 2px 7px);
+  box-shadow: inset 0 6px 14px rgba(0,0,0,.6); }
+.speakercab .badge { top: auto; bottom: 22px; transform: translateX(-50%); font-size: 28px; }
+.speakercab .castor { position: absolute; bottom: -12px; width: 26px; height: 14px; border-radius: 0 0 8px 8px; background: linear-gradient(180deg, #333, #0a0a0a); }
+.cabplate { display: flex; flex-direction: column; gap: 14px; padding: 24px 22px 22px; }
+.cabplate .row1 { display: flex; align-items: center; gap: 10px; }
+.cabplate .row1 .vfdwin { height: 46px; justify-content: center; }
+.cabplate .row1 .vfdtxt { font-size: 13px; }
+.cabplate .row2 { display: flex; justify-content: space-around; align-items: flex-start; flex-wrap: wrap; gap: 10px 18px; }
+
+/* ================= SETTINGS: the amp's rear panel ================= */
+.rear { position: relative; border-radius: 8px; padding: 32px 30px 36px; color: #e9e6df;
+  background: radial-gradient(rgba(255,255,255,.05) .7px, transparent 1.1px) 0 0 / 3px 3px, linear-gradient(180deg, #232325, #161617);
+  box-shadow: 0 0 0 1px #000, 0 22px 36px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.12); }
+.rear .title { font: 700 12px/1 var(--serif-sc); letter-spacing: .34em; color: #b9b6ae; text-align: center; margin-bottom: 26px; }
+.rearflow { display: flex; flex-wrap: wrap; gap: 30px 34px; align-items: flex-start; justify-content: center; }
+.silkbox { position: relative; border: 1.5px solid rgba(233,230,223,.7); border-radius: 4px; padding: 24px 18px 16px; display: flex; gap: 22px; align-items: flex-end; }
+.silkbox > .lab { position: absolute; top: -9px; left: 12px; padding: 0 8px; background: #1d1d1f; font: 500 13px/1 var(--panel-font); letter-spacing: .24em; text-transform: uppercase; }
+.silkbox > .sticker { position: absolute; right: -8px; top: -16px; }
+.socketwrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.socket { width: 46px; height: 46px; border-radius: 50%; background: radial-gradient(circle, #050505 0 8px, #9a9a9a 9px 13px, #3a3a3a 14px 18px, #b5b5b5 19px 21px, #2a2a2a 22px); box-shadow: 0 3px 5px rgba(0,0,0,.6); }
+.usbport { width: 44px; height: 40px; border-radius: 4px; background: linear-gradient(180deg, #c8c8c8, #8a8a8a); padding: 6px; box-shadow: 0 3px 5px rgba(0,0,0,.6); }
+.usbport::before { content: ""; display: block; width: 100%; height: 100%; background: #111; clip-path: polygon(18% 0, 82% 0, 100% 22%, 100% 100%, 0 100%, 0 22%); }
+.dcjack { width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle, #ccc 0 2px, #050505 3px 9px, #8d8d8d 10px 14px, #2a2a2a 15px); }
+.modelsticker { background: #f1ece0; color: #1b1a17; border-radius: 3px; padding: 12px 14px; width: 260px; box-shadow: 0 4px 8px rgba(0,0,0,.6); transform: rotate(.6deg); }
+.modelsticker .m { font: 600 17px/1.2 var(--panel-font); letter-spacing: .06em; }
+.modelsticker .s { font: 400 12.5px/1.4 var(--panel-font); letter-spacing: .08em; color: #555; }
+.barcode { height: 30px; margin-top: 8px; background: repeating-linear-gradient(90deg, #111 0 2px, transparent 2px 3px, #111 3px 4px, transparent 4px 7px, #111 7px 10px, transparent 10px 11px); }
+.warning { max-width: 300px; border: 1.5px solid rgba(233,230,223,.7); padding: 10px 12px; font: 500 11.5px/1.45 var(--panel-font); letter-spacing: .1em; text-transform: uppercase; color: #cfccc4; }
+.warning b { display: block; font-size: 13px; letter-spacing: .2em; color: #fff; margin-bottom: 4px; }
+.rearnote { font: 400 13.5px/1.45 var(--panel-font); letter-spacing: .05em; color: #cfccc4; max-width: 230px; margin: 0; }
+
+/* ================= STAGE ================= */
+.marquee { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 18px 26px; }
+.mq-c { display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 0; }
+.mqwin { flex: none; width: 100%; height: 92px; justify-content: center; }
+.mqwin .vfdtxt { font-size: 40px; }
+.mq-sub { display: flex; gap: 12px; align-items: center; font: 700 15px/1 var(--serif-sc); letter-spacing: .2em; color: var(--engrave); text-shadow: var(--engraved); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.mq-sub .dot { font-size: 9px; opacity: .6; }
+.floorwrap { perspective: 1500px; padding-top: 4px; }
+.floor { position: relative; border-radius: 14px; padding: 24px 24px 30px; transform: rotateX(16deg); transform-origin: 50% 100%;
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,.028) 0 1px, transparent 1px 3px), linear-gradient(180deg, #2e2e30, #121213);
+  box-shadow: 0 0 0 2px #1a1408, 0 0 0 4px rgba(233,223,198,.5), 0 34px 40px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.14); }
+.floorname { font: 700 13px/1 var(--serif-sc); letter-spacing: .3em; color: var(--gold-2); margin: 0 0 16px; display: flex; align-items: center; gap: 14px; }
+.floorname::before, .floorname::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(231,199,111,.55), transparent); }
+.floor-row { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px 12px; }
+.floor-row.fx { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.floor-row + .floorname { margin-top: 26px; }
+.fs { display: flex; flex-direction: column; align-items: center; gap: 12px; background: none; border: 0; cursor: pointer; padding: 0; color: var(--cream); min-width: 0; }
+.fs .tag { width: 100%; min-height: 46px; display: grid; place-items: center; text-align: center; padding: 6px 8px; color: var(--engrave); border-radius: 4px;
+  font: 500 15px/1.1 var(--panel-font); letter-spacing: .08em; text-transform: uppercase; text-shadow: var(--engraved); background: var(--brushed-gold);
+  box-shadow: 0 0 0 1.5px #1a1408, 0 5px 8px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.55); }
+.fs .eng { font: 600 15px/1 var(--panel-font); letter-spacing: .24em; text-transform: uppercase; color: var(--cream); min-height: 46px; display: grid; place-items: center; }
+.fs .num { font: 700 12px/1 var(--serif-sc); letter-spacing: .2em; color: var(--cream-dim); }
+.fs .sw { width: 78px; height: 78px; border-radius: 50%; transition: transform .06s; background: radial-gradient(circle at 40% 30%, #ffffff, #d2d2d2 28%, #727272 66%, #383838);
+  box-shadow: 0 0 0 7px #222, 0 0 0 9px #9a9a9a, 0 12px 18px rgba(0,0,0,.75), inset 0 -3px 6px rgba(0,0,0,.35); }
+.fs:active .sw { transform: scale(.95); }
+.fs.on .sw, .fs.fxon .sw { box-shadow: 0 0 0 7px #222, 0 0 0 9px var(--gold-2), 0 0 28px rgba(231,199,111,.4), 0 12px 18px rgba(0,0,0,.75), inset 0 -3px 6px rgba(0,0,0,.35); }
+.fs .bpmwin { flex: none; height: 46px; width: 100%; padding: 0 6px; justify-content: center; }
+.fs .bpmwin .vfdtxt { font-size: 16px; }
+
+/* ================= phone ================= */
+.phone .top { padding: 20px 22px 4px; }
+.phone .logo { font-size: 36px; flex: 1; }
+.phone .status { display: none; }
+.phone .vfd { order: 3; flex-basis: 100%; min-width: 0; }
+.phone .tabs { padding: 8px 22px 14px; gap: 4px 20px; }
+.phone .page { padding: 4px 18px 26px; }
+.phone .head { padding: 14px 10px 14px; }
+.phone .plate { padding: 18px 12px; }
+.phone .platerow { justify-content: center; }
+.phone .vknob { width: 92px; } .phone .vknob svg { width: 92px; height: 92px; }
+.phone .vknob.sm { width: 80px; } .phone .vknob.sm svg { width: 80px; height: 80px; }
+.phone .voicewin .vfdwin { width: 180px; }
+.phone .grille { height: 70px; }
+.phone .board { padding: 34px 14px 34px; }
+.phone .pedals { gap: 36px 30px; }
+.phone .pedal { width: calc(50% - 16px) !important; padding: 14px 6px 16px; }
+.phone .pedal .pname { font-size: 26px; }
+.phone .mknob { width: 50px; } .phone .mknob svg { width: 44px; height: 44px; }
+.phone .types button { padding: 5px 5px; font-size: 10.5px; }
+.phone .channel { grid-template-columns: 1fr; justify-items: center; padding: 20px 14px; }
+.phone .chright { width: 100%; }
+.phone .chwin { height: 64px; } .phone .chwin .vfdtxt { font-size: 21px; }
+.phone .presets { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.phone .preset:nth-child(4) { border-left: 0; }
+.phone .preset:nth-child(n+4) { border-top: 1.5px solid rgba(74,58,28,.55); }
+.phone .genres { margin-left: 0; }
+.phone .rack { grid-template-columns: 1fr; padding: 34px 44px 26px; }
+.phone .rack .ear { width: 30px; } .phone .rack .ear i { width: 12px; height: 20px; margin-left: -6px; }
+.phone .rack .silkname { left: 44px; }
+.phone .cabrig { grid-template-columns: 1fr; }
+.phone .rear { padding: 28px 14px 30px; }
+.phone .silkbox { flex-wrap: wrap; justify-content: center; }
+.phone .marquee { grid-template-columns: 1fr 1fr; padding: 16px 12px; }
+.phone .mq-c { grid-column: 1 / -1; order: -1; }
+.phone .marquee > div:not(.mq-c) { justify-self: center; }
+.phone .mqwin { height: 70px; } .phone .mqwin .vfdtxt { font-size: 24px; }
+.phone .floor { padding: 20px 14px 24px; transform: rotateX(10deg); }
+.phone .floor-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px 10px; }
+.phone .floor-row.fx { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.phone .fs .sw { width: 64px; height: 64px; }
+
+.notes { margin-top: 34px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 14px; }
+.notes div { border: 1px solid var(--page-line); border-radius: 14px; padding: 14px 16px; }
+.notes b { display: block; font: 400 26px/1.1 var(--script); color: var(--gold-1); }
+.notes p { margin: 4px 0 0; color: var(--page-dim); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Core Tab · Vintage</h1>
+  <p class="lede">Every screen is a piece of real gear: an amp head over a pedalboard with patch cables, a rotary channel selector with a
+    shelf of cassettes, a rack-mount tuner, a speaker cab with rotary switches, the amp's back panel for settings, and a floor controller for the stage.
+    Drag knobs up or down, turn the rotary switches, stomp the footswitches.</p>
+  <div class="devseg" id="devseg"><button class="on" data-dev="tablet">Tablet</button><button data-dev="phone">Phone</button></div>
+
+  <div class="stagearea"><div class="cab" id="cab">
+    <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+    <div class="screen">
+      <div class="top">
+        <div class="logo">Core Tab</div>
+        <div class="vfd">
+          <button class="brassbtn" id="prev" aria-label="Previous patch">◀</button>
+          <div class="vfdwin"><span class="vfdtxt" id="pTxt"></span><span class="vfdsub" id="pSub"></span></div>
+          <button class="brassbtn" id="next" aria-label="Next patch">▶</button>
+        </div>
+        <span class="status"><i></i>ID:Core 40 V4</span>
+        <button class="savebtn" id="save">SAVE</button>
+      </div>
+      <nav class="tabs" id="tabs">
+        <button class="on" data-p="amp">Amp</button><button data-p="cab">CabRig</button><button data-p="patches">Patches</button>
+        <button data-p="tuner">Tuner</button><button data-p="stage">Stage</button><button data-p="settings">Settings</button>
+      </nav>
+
+      <!-- ================= AMP ================= -->
+      <section class="page on" id="p-amp">
+        <div class="head">
+          <span class="handle"></span>
+          <div class="plate">
+            <span class="screw s-a"></span><span class="screw s-b"></span><span class="screw s-c"></span><span class="screw s-d"></span>
+            <div class="platerow">
+              <div class="group">
+                <div class="voicewin"><button class="brassbtn" id="vprev" aria-label="Previous voice">◀</button>
+                  <div class="vfdwin"><span class="vfdtxt" id="vTxt"></span></div>
+                  <button class="brassbtn" id="vnext" aria-label="Next voice">▶</button></div>
+                <div class="knobs"><div data-k="gain" data-label="Gain" data-v="70"></div><div data-k="volume" data-label="Volume" data-v="50" data-r="global"></div></div>
+                <span class="groupname">Preamp</span>
+              </div>
+              <div class="group">
+                <div class="knobs"><div data-k="bass" data-label="Bass" data-v="72"></div><div data-k="middle" data-label="Middle" data-v="58"></div><div data-k="treble" data-label="Treble" data-v="80"></div></div>
+                <div class="knobs"><div data-k="isf" data-label="ISF" data-v="64" data-r="USA · UK"></div><div data-k="reso" data-label="Reso" data-v="50" data-sm="1"></div><div data-k="pres" data-label="Presence" data-v="76" data-sm="1"></div></div>
+                <span class="groupname">Tone</span>
+              </div>
+              <div class="group" style="justify-content:space-between;align-self:stretch">
+                <div class="jewel" title="Power"></div>
+                <div class="toggles">
+                  <button class="tsw" id="pw"><span class="bat"></span><span class="lbls">FULL<br>1 W</span></button>
+                  <button class="tsw down" id="man"><span class="bat"></span><span class="lbls">PATCH<br>MANUAL</span></button>
+                  <button class="tsw down" id="tap"><span class="bat"></span><span class="lbls">TAP<br><b id="bpm">—</b></span></button>
+                </div>
+                <span class="groupname">Power</span>
+              </div>
+            </div>
+          </div>
+          <div class="grille"><span class="badge">Core Tab</span></div>
+        </div>
+        <div class="board" id="board">
+          <svg class="cables" id="cables" aria-hidden="true"></svg>
+          <div class="pedals" id="pedals"></div>
+          <span class="boardlabel">Guitar in →</span>
+        </div>
+      </section>
+
+      <!-- ================= CABRIG ================= -->
+      <section class="page" id="p-cab">
+        <div class="cabrig">
+          <div class="speakercab"><div class="cloth"></div><span class="badge">Core Tab</span><span class="castor" style="left:18px"></span><span class="castor" style="right:18px"></span></div>
+          <div class="plate cabplate">
+            <span class="screw s-a"></span><span class="screw s-b"></span><span class="screw s-c"></span><span class="screw s-d"></span>
+            <div class="row1"><button class="brassbtn" id="cprev" aria-label="Previous cabinet">◀</button><div class="vfdwin"><span class="vfdtxt" id="cTxt"></span></div><button class="brassbtn" id="cnext" aria-label="Next cabinet">▶</button></div>
+            <div class="row2">
+              <div id="micRot"></div>
+              <div id="roomRot"></div>
+              <button class="tsw" id="axis" style="align-self:center"><span class="bat"></span><span class="lbls">ON AXIS<br>OFF AXIS</span></button>
+            </div>
+            <span class="groupname">CabRig Lite &nbsp;<span class="sticker">Needs V4 capture</span></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= PATCHES ================= -->
+      <section class="page" id="p-patches">
+        <div class="plate channel">
+          <span class="screw s-a"></span><span class="screw s-b"></span><span class="screw s-c"></span><span class="screw s-d"></span>
+          <div id="chanRot"></div>
+          <div class="chright">
+            <div class="vfdwin chwin"><span class="vfdtxt" id="chTxt"></span></div>
+            <div class="chsub"><span id="chVoice"></span><span>◆</span><span>One patch per voice</span></div>
+            <div class="presets" id="presets"></div>
+          </div>
+        </div>
+        <div class="shelfhead"><h3>Library</h3><div class="genres" id="genres"></div></div>
+        <div class="shelf"><div class="tapes" id="tapes"></div><div class="plank"></div></div>
+        <div class="shelfacts"><span class="sel-name" id="selName"></span><button class="ghost" id="loadBtn">Load</button><button class="ghost">Share</button><button class="ghost">Backup amp</button><button class="savebtn" style="height:38px">Save current</button></div>
+      </section>
+
+      <!-- ================= TUNER ================= -->
+      <section class="page" id="p-tuner">
+        <div class="rack">
+          <span class="ear l"><i></i><i></i></span><span class="ear r"><i></i><i></i></span>
+          <span class="silkname">Chromatic tuner</span>
+          <svg viewBox="0 0 600 320" aria-label="Tuner meter">
+            <defs>
+              <linearGradient id="chrome" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f4f4"/><stop offset=".45" stop-color="#8d8d8d"/><stop offset=".55" stop-color="#5c5c5c"/><stop offset="1" stop-color="#cfcfcf"/></linearGradient>
+              <radialGradient id="lampface" cx="50%" cy="95%" r="95%"><stop offset="0" stop-color="#ffe9b8"/><stop offset=".55" stop-color="#f6c978"/><stop offset="1" stop-color="#c98d35"/></radialGradient>
+              <radialGradient id="vign" cx="50%" cy="60%" r="70%"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>
+              <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset=".35" stop-color="#fff" stop-opacity="0"/></linearGradient>
+            </defs>
+            <rect x="4" y="4" width="592" height="312" rx="26" fill="url(#chrome)"/>
+            <rect x="16" y="16" width="568" height="288" rx="16" fill="#1a1510"/>
+            <rect x="22" y="22" width="556" height="276" rx="12" fill="url(#lampface)"/>
+            <rect x="22" y="22" width="556" height="276" rx="12" fill="url(#vign)"/>
+            <g id="scale"></g>
+            <text x="300" y="66" text-anchor="middle" font-family="Playfair Display SC" font-weight="700" font-size="15" letter-spacing="5" fill="#4a3412">CENTS</text>
+            <text id="tNote" x="300" y="232" text-anchor="middle" font-family="Oswald" font-weight="500" font-size="64" fill="#2a1d0a">A</text>
+            <text id="tState" x="300" y="262" text-anchor="middle" font-family="Yellowtail" font-size="26" fill="#4a3412">in tune</text>
+            <line id="needle" x1="300" y1="300" x2="300" y2="86" stroke="#9e1408" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="300" cy="300" r="20" fill="url(#chrome)"/><circle cx="300" cy="300" r="12" fill="#1a1510"/>
+            <rect x="22" y="22" width="556" height="276" rx="12" fill="url(#glass)"/>
+            <g fill="url(#chrome)"><circle cx="34" cy="34" r="6"/><circle cx="566" cy="34" r="6"/><circle cx="34" cy="286" r="6"/><circle cx="566" cy="286" r="6"/></g>
+          </svg>
+          <div class="tside">
+            <span class="cap">Note · cents</span>
+            <div class="vfdwin"><span class="vfdtxt" id="tTxt"></span></div>
+            <div class="lamps"><span><i class="lamp" id="lFlat"></i>FLAT</span><span><i class="lamp" id="lOk"></i>TUNE</span><span><i class="lamp" id="lSharp"></i>SHARP</span></div>
+            <span class="cap">Strings</span>
+            <div class="lamps" id="strings"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= STAGE ================= -->
+      <section class="page" id="p-stage">
+        <div class="plate marquee">
+          <span class="screw s-a"></span><span class="screw s-b"></span><span class="screw s-c"></span><span class="screw s-d"></span>
+          <div><div data-k="sgain" data-label="Gain" data-v="70"></div></div>
+          <div class="mq-c"><div class="vfdwin mqwin"><span class="vfdtxt" id="sTxt"></span></div>
+            <div class="mq-sub"><span id="sVoice"></span><span class="dot">◆</span><span id="sFx"></span></div></div>
+          <div><div data-k="svol" data-label="Volume" data-v="50"></div></div>
+        </div>
+        <div class="floorwrap"><div class="floor">
+          <span class="screw steel s-a"></span><span class="screw steel s-b"></span><span class="screw steel s-c"></span><span class="screw steel s-d"></span>
+          <div class="floorname">Patches</div><div class="floor-row" id="psw"></div>
+          <div class="floorname">Effects</div><div class="floor-row fx" id="fsw"></div>
+        </div></div>
+      </section>
+
+      <!-- ================= SETTINGS: rear panel ================= -->
+      <section class="page" id="p-settings">
+        <div class="rear">
+          <span class="screw steel s-a"></span><span class="screw steel s-b"></span><span class="screw steel s-c"></span><span class="screw steel s-d"></span>
+          <div class="title">Rear panel · settings</div>
+          <div class="rearflow">
+            <div class="modelsticker"><div class="m">ID:CORE STEREO 40 V4</div><div class="s">Controlled by Core Tab · USB 27D4:0013</div><div class="s">Firmware updates: Architect on a PC</div><div class="barcode"></div></div>
+
+            <div class="silkbox"><span class="lab">Footswitch</span><span class="sticker">Needs V4 capture</span>
+              <div class="socketwrap"><div class="socket"></div><span class="silk">FS-11 / FS-18</span></div>
+              <button class="tsw down" id="fsMode"><span class="bat"></span><span class="lbls">Default<br>Alt</span></button>
+              <div class="socketwrap"><span class="silk">Switch 1 toggles</span><span class="silk" style="color:#fff;font-size:16px">3 ↔ 5</span><button class="ghost" style="height:30px">Pick</button></div>
+            </div>
+
+            <div class="silkbox"><span class="lab">USB audio</span><span class="sticker">Needs V4 capture</span>
+              <div class="socketwrap"><div class="usbport"></div><span class="silk">USB</span></div>
+              <div id="audioRot"></div>
+              <div id="musicKnob"></div>
+            </div>
+
+            <div class="silkbox"><span class="lab">Memory</span>
+              <button class="tsw down" id="wr"><span class="bat"></span><span class="lbls">Write<br>Protect</span></button>
+              <p class="rearnote">Saving patches overwrites the amp's slot. Stays on Protect until the V4 commands are confirmed.</p>
+            </div>
+
+            <div class="silkbox"><span class="lab">Power</span>
+              <div class="socketwrap"><div class="dcjack"></div><span class="silk">DC in</span></div>
+              <p class="rearnote">Factory reset: hold MOD + DLY + REV while switching the amp on.</p>
+            </div>
+
+            <div class="warning"><b>⚠ Caution</b>No user-serviceable parts inside. This app only talks to the amp over USB; it never updates firmware.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div></div>
+
+  <div class="notes">
+    <div><b>Amp &amp; board</b><p>The amp head sits above a carpeted pedalboard. Pedals of different sizes sit a little crooked and are joined by patch cables from jack to jack.</p></div>
+    <div><b>Channel selector</b><p>Turn the six-way rotary switch or tap an engraved preset. Saved sounds are cassettes on a wooden shelf; pick one to load or share it.</p></div>
+    <div><b>Rack tuner</b><p>A rack-mount unit with ears and screws, a backlit needle meter, and flat / tune / sharp lamps.</p></div>
+    <div><b>Back panel</b><p>Settings live on the amp's rear: a model sticker, footswitch and USB sockets, a write-protect switch and silkscreened notes.</p></div>
+  </div>
+</main>
+
+<script>
+/* ================= data ================= */
+const VOICES = ["Clean Warm","Clean Bright","Crunch","Super Crunch","OD 1","OD 2"];
+const NAMES = ["Clean One","Clean Arp","Crunch 80s","Super Crunch","Lead","High Gain"];
+const PEDALS = [   // in signal order: guitar → gate → mod → echo → reverb → amp
+  { k: "gate", name: "Gate", sub: "Noise gate", w: 150, rot: -1.6, c: "linear-gradient(160deg,#2f4a3a,#16261d)", knobs: ["Amount","Sens"], capture: true },
+  { k: "mod", name: "Modulate", sub: "Four voices", w: 210, rot: 1.1, c: "linear-gradient(160deg,#5b3b7a,#2c1a40)", types: ["Phaser","Ch/Flng","Env","Trem"] },
+  { k: "dly", name: "Echo", sub: "Stereo delay", w: 236, rot: -.7, c: "linear-gradient(160deg,#e9dcbc,#bfae86)", ink: "#2a2014", types: ["Linear","Analog","Tape","Multi"], knobs: ["Feedback","Level","Time"] },
+  { k: "rev", name: "Reverb", sub: "Super wide", w: 196, rot: 1.4, c: "linear-gradient(160deg,#7a1f1b,#3e0d0b)", types: ["Room","Hall","Spring","Plate"], knobs: ["Size","Level"] },
+];
+const MODKNOBS = [["Mix","Depth","Speed"],["Morph","Mix","Speed"],["Sens","Depth"],["FM","AM","Speed"]];
+const CABS = ["1x10 Classic USA Combo","1x12 Vintage USA Alnico","1x12 Vintage USA Ceramic","1x12 Classic USA Alnico","1x12 Classic USA Ceramic","1x12 Modern USA Combo",
+  "1x12 Classic USA Open Back","2x10 Classic USA Combo","2x12 Vintage USA Combo","2x12 Modern USA Combo","2x12 Vintage Closed Back","2x12 Classic UK Combo",
+  "2x12 Classic USA Open Back","2x12 Classic USA Closed Back","2x12 Vintage Stack","4x10 Vintage USA Open Back","4x12 Vintage Oversized UK","4x12 Vintage UK",
+  "4x12 Modern UK","4x12 Classic UK","4x12 Modern USA","4x12 Modern UK Ceramic","4x12 Modern UK Neo"];
+const LIB = [["Back in Black-ish","Rock","Crunch","#c0392b"],["Thrash Rhythm","Metal","OD 2 · gate","#2c3e50"],["Surf Spring","Surf","Clean Bright","#1abc9c"],
+  ["Slow Blues Lead","Blues","OD 1 · hall","#2e5aa8"],["Pop Chorus","Pop","Clean Warm","#d35486"],["Backup 17 Nov","Backup","6 patches","#7f8c8d"]];
+const state = { slot: 2, cab: 17, on: { gate: false, mod: false, dly: true, rev: true }, focus: "rev", type: { mod: 0, dly: 1, rev: 0 }, bpm: 0, tape: 0 };
+const $ = id => document.getElementById(id);
+
+/* ================= helpers ================= */
+// 14-segment display text; "!" is the font's full-width blank so spaces keep one cell.
+function vfd(el, text) { el.textContent = text.toUpperCase().replace(/ /g, "!"); el.setAttribute("aria-label", text); }
+function drag(svg, get, set, min, max, pxPerRange = 200) {
+  let y0 = 0, v0 = 0;
+  svg.addEventListener("pointerdown", e => { svg.setPointerCapture(e.pointerId); y0 = e.clientY; v0 = get(); });
+  svg.addEventListener("pointermove", e => { if (svg.hasPointerCapture(e.pointerId)) set(Math.round(Math.min(max, Math.max(min, v0 + (y0 - e.clientY) * (max - min) / pxPerRange)))); });
+  svg.addEventListener("keydown", e => { const st = Math.max(1, Math.round((max - min) / 50));
+    if (["ArrowUp","ArrowRight"].includes(e.key)) set(Math.min(max, get() + st)); else if (["ArrowDown","ArrowLeft"].includes(e.key)) set(Math.max(min, get() - st)); else return; e.preventDefault(); });
+}
+let uid = 0;
+
+/* plate knob: numbered skirt engraved on the plate, knurled black body, gold cap */
+function plateKnob(host) {
+  const id = ++uid, label = host.dataset.label, small = host.dataset.sm === "1"; let v = +host.dataset.v;
+  host.className = "vknob" + (small ? " sm" : "");
+  host.innerHTML = `<svg viewBox="0 0 120 120" role="slider" tabindex="0" aria-label="${label}" aria-valuemin="0" aria-valuemax="127"></svg><span class="nm">${label}</span><span class="rd"></span>`;
+  const svg = host.querySelector("svg"), rd = host.querySelector(".rd");
+  let skirt = "";
+  for (let i = 0; i <= 10; i++) { const a = (135 + i * 27) * Math.PI / 180;
+    skirt += `<text x="${(60 + 50 * Math.cos(a)).toFixed(1)}" y="${(60 + 50 * Math.sin(a) + 3.5).toFixed(1)}" text-anchor="middle" font-family="Oswald" font-weight="600" font-size="10" fill="#1b140a">${i}</text>
+      <line x1="${(60 + 41 * Math.cos(a)).toFixed(1)}" y1="${(60 + 41 * Math.sin(a)).toFixed(1)}" x2="${(60 + 44 * Math.cos(a)).toFixed(1)}" y2="${(60 + 44 * Math.sin(a)).toFixed(1)}" stroke="#1b140a" stroke-width="1.4"/>`; }
+  let knurl = ""; for (let i = 0; i < 36; i++) { const a = i * 10 * Math.PI / 180;
+    knurl += `<line x1="${(60 + 30 * Math.cos(a)).toFixed(1)}" y1="${(60 + 30 * Math.sin(a)).toFixed(1)}" x2="${(60 + 34 * Math.cos(a)).toFixed(1)}" y2="${(60 + 34 * Math.sin(a)).toFixed(1)}" stroke="#000" stroke-width="1.6"/>`; }
+  const fixed = `<defs><radialGradient id="kb${id}" cx="40%" cy="30%" r="75%"><stop offset="0" stop-color="#4a4a4a"/><stop offset=".6" stop-color="#151515"/><stop offset="1" stop-color="#050505"/></radialGradient>
+      <radialGradient id="kc${id}" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#fff3c4"/><stop offset=".45" stop-color="#e2bf63"/><stop offset="1" stop-color="#7a5a1d"/></radialGradient>
+      <filter id="ks${id}" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="2" dy="5" stdDeviation="3.5" flood-color="#000" flood-opacity=".65"/></filter></defs>${skirt}`;
+  function paint() {
+    const ang = 135 + (v / 127) * 270, ten = (v * 10 / 127).toFixed(1);
+    svg.innerHTML = fixed + `<g filter="url(#ks${id})"><circle cx="60" cy="60" r="34" fill="url(#kb${id})"/>${knurl}</g><circle cx="60" cy="60" r="27" fill="#0d0d0d"/>
+      <circle cx="60" cy="60" r="18" fill="url(#kc${id})" stroke="#5a4214" stroke-width="1"/><g transform="rotate(${ang} 60 60)"><line x1="79" y1="60" x2="92" y2="60" stroke="#f2e6c6" stroke-width="3.2" stroke-linecap="round"/></g>`;
+    rd.textContent = host.dataset.r ? (host.dataset.k === "isf" ? (v < 43 ? "USA" : v > 84 ? "UK" : ten) : ten + " · " + host.dataset.r) : ten;
+    svg.setAttribute("aria-valuenow", v); svg.setAttribute("aria-valuetext", ten);
+  }
+  drag(svg, () => v, nv => { v = nv; paint(); }, 0, 127); paint();
+}
+/* chicken-head pedal knob */
+function pedalKnob(host, label, val, min = 0, max = 127, light = false) {
+  const id = ++uid; let v = val;
+  host.className = "mknob";
+  host.innerHTML = `<svg viewBox="0 0 60 60" role="slider" tabindex="0" aria-label="${label}" aria-valuemin="${min}" aria-valuemax="${max}"></svg><span${light ? ' class="silk"' : ""}>${label}</span>`;
+  const svg = host.querySelector("svg");
+  function paint() { const ang = -135 + ((v - min) / (max - min)) * 270;
+    svg.innerHTML = `<defs><radialGradient id="pk${id}" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#555"/><stop offset=".7" stop-color="#141414"/><stop offset="1" stop-color="#000"/></radialGradient>
+      <filter id="ps${id}" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="1" dy="3" stdDeviation="2" flood-color="#000" flood-opacity=".7"/></filter></defs>
+      <g transform="rotate(${ang} 30 30)" filter="url(#ps${id})"><circle cx="30" cy="30" r="19" fill="url(#pk${id})"/><path d="M30 6 L37 22 L23 22 Z" fill="url(#pk${id})"/>
+      <line x1="30" y1="9" x2="30" y2="25" stroke="#f4ecd8" stroke-width="2.6" stroke-linecap="round"/></g>`;
+    svg.setAttribute("aria-valuenow", v); }
+  drag(svg, () => v, nv => { v = nv; paint(); }, min, max); paint();
+}
+/* rotary selector switch: short engraved labels around a chicken-head pointer; full name shown under it */
+function rotary(host, o) {
+  const id = ++uid, n = o.labels.length, span = o.span || 240, ink = o.light ? "#e9e6df" : "#1b140a", dim = o.light ? "#8d8a83" : "#5a4a26";
+  let v = o.value;
+  const ang = i => -span / 2 + (n === 1 ? 0 : i * span / (n - 1));
+  host.className = "rotary"; host.style.setProperty("--rs", (o.size || 170) + "px");
+  host.innerHTML = `<svg viewBox="-20 -6 240 206" role="slider" tabindex="0" aria-label="${o.cap}" aria-valuemin="0" aria-valuemax="${n - 1}"></svg>
+    <span class="rcap" style="color:${ink}">${o.cap}</span><span class="rval" style="color:${ink}"></span>`;
+  const svg = host.querySelector("svg"), val = host.querySelector(".rval");
+  function paint() {
+    let g = `<defs><radialGradient id="rb${id}" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#5a5a5a"/><stop offset=".65" stop-color="#151515"/><stop offset="1" stop-color="#000"/></radialGradient>
+      <filter id="rs${id}" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="2" dy="5" stdDeviation="3.5" flood-color="#000" flood-opacity=".6"/></filter></defs>`;
+    o.labels.forEach((lab, i) => { const a = ang(i) * Math.PI / 180, on = i === v;
+      g += `<line x1="${(100 + 56 * Math.sin(a)).toFixed(1)}" y1="${(100 - 56 * Math.cos(a)).toFixed(1)}" x2="${(100 + 64 * Math.sin(a)).toFixed(1)}" y2="${(100 - 64 * Math.cos(a)).toFixed(1)}" stroke="${on ? ink : dim}" stroke-width="${on ? 3 : 2}"/>
+        <text class="rpos" data-i="${i}" x="${(100 + 84 * Math.sin(a)).toFixed(1)}" y="${(100 - 84 * Math.cos(a) + 5).toFixed(1)}" text-anchor="middle" font-size="${o.fs || 15}" fill="${on ? ink : dim}" font-weight="${on ? 600 : 500}">${lab}</text>`; });
+    g += `<g transform="rotate(${ang(v)} 100 100)" filter="url(#rs${id})"><circle cx="100" cy="100" r="34" fill="url(#rb${id})"/>
+      <path d="M100 48 L114 88 L86 88 Z" fill="url(#rb${id})"/><line x1="100" y1="54" x2="100" y2="86" stroke="#f4ecd8" stroke-width="3.4" stroke-linecap="round"/></g>`;
+    svg.innerHTML = g; val.textContent = o.full ? o.full[v] : "";
+    svg.setAttribute("aria-valuenow", v); svg.setAttribute("aria-valuetext", o.full ? o.full[v] : o.labels[v]);
+    svg.querySelectorAll(".rpos").forEach(t => t.addEventListener("pointerdown", e => { e.stopPropagation(); set(+t.dataset.i); }));
+  }
+  function set(i) { if (i === v) return; v = i; paint(); o.onChange && o.onChange(v); }
+  drag(svg, () => v, set, 0, n - 1, 160);
+  paint();
+  return { set: i => { v = i; paint(); } };
+}
+
+/* ================= AMP: pedalboard ================= */
+function renderBoard() {
+  const wrap = $("pedals"); wrap.innerHTML = "";
+  PEDALS.forEach(p => {
+    const on = state.on[p.k], foc = state.focus === p.k && on, t = state.type[p.k] ?? 0;
+    const el = document.createElement("div"); el.className = "pedal" + (foc ? " focused" : ""); el.dataset.k = p.k;
+    el.style.setProperty("--pc", p.c); el.style.setProperty("--w", p.w + "px"); el.style.setProperty("--rot", p.rot + "deg"); if (p.ink) el.style.setProperty("--pc-ink", p.ink);
+    const knobs = p.k === "mod" ? MODKNOBS[t] : p.knobs;
+    el.innerHTML = `<span class="dc"></span><span class="jack in"></span><span class="jack out"></span>
+      <span class="pled${on ? (foc ? " g" : " r") : ""}"></span>
+      <span class="pname">${p.name}</span><span class="psub">${p.sub}</span>
+      ${p.capture ? '<span class="sticker">Needs V4 capture</span>' : `<div class="types">${p.types.map((x, i) => `<button class="${i === t ? "on" : ""}" data-i="${i}">${x}</button>`).join("")}</div>`}
+      <div class="pknobs"></div><span class="focusnote">● FOCUS</span>
+      <button class="foot" aria-label="${p.name} footswitch"></button>`;
+    const kr = el.querySelector(".pknobs");
+    knobs.forEach((kn, i) => { const d = document.createElement("div"); kr.appendChild(d);
+      const time = p.k === "dly" && kn === "Time"; pedalKnob(d, kn, time ? 400 : [60, 80, 50][i], time ? 100 : 0, time ? 2000 : 127); });
+    el.querySelectorAll(".types button").forEach(b => b.onclick = () => { state.type[p.k] = +b.dataset.i; renderBoard(); });
+    el.querySelector(".foot").onclick = () => stomp(p.k);
+    wrap.appendChild(el);
+  });
+  requestAnimationFrame(drawCables);
+  renderStage();
+}
+// Signal runs right to left on a real board (input on the right side of each pedal), so cables go out-left → in-right.
+function drawCables() {
+  const board = $("board"), svg = $("cables"); if (!board.offsetParent) return;
+  const br = board.getBoundingClientRect();
+  const pt = el => { const r = el.getBoundingClientRect(); return [r.left + r.width / 2 - br.left, r.top + r.height / 2 - br.top]; };
+  const peds = PEDALS.map(p => board.querySelector(`.pedal[data-k="${p.k}"]`));
+  const cable = (a, b, sag) => { const [x1, y1] = a, [x2, y2] = b, dx = Math.min(70, Math.abs(x2 - x1) * .4 + 18), s1 = x2 < x1 ? -1 : 1;
+    const d = `M${x1.toFixed(1)} ${y1.toFixed(1)} C${(x1 + s1 * dx).toFixed(1)} ${(y1 + sag).toFixed(1)}, ${(x2 - s1 * dx).toFixed(1)} ${(y2 + sag).toFixed(1)}, ${x2.toFixed(1)} ${y2.toFixed(1)}`;
+    return `<path d="${d}" stroke="#050505" stroke-width="9" fill="none" stroke-linecap="round"/><path d="${d}" stroke="#2c2c2c" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+      <path d="${d}" stroke="rgba(255,255,255,.14)" stroke-width="1.4" fill="none" stroke-linecap="round" transform="translate(0,-1.6)"/>`; };
+  const W = br.width;
+  let out = "";
+  const first = pt(peds[0].querySelector(".jack.in"));
+  out += cable([W + 40, first[1] + 20], [first[0] + 6, first[1]], 26);            // from the guitar, off the right edge
+  for (let i = 0; i < peds.length - 1; i++) { const a = pt(peds[i].querySelector(".jack.out")), b = pt(peds[i + 1].querySelector(".jack.in"));
+    out += cable([a[0] - 6, a[1]], [b[0] + 6, b[1]], 40); }
+  const last = pt(peds.at(-1).querySelector(".jack.out"));
+  out += cable([last[0] - 6, last[1]], [-40, last[1] - 50], 24);                   // to the amp, off the left edge
+  svg.setAttribute("viewBox", `0 0 ${W} ${br.height}`); svg.innerHTML = out;
+}
+function stomp(k) {   // the amp's rule: off → on (red) → focused (green) → off
+  if (k === "gate") { state.on.gate = !state.on.gate; renderBoard(); return; }
+  if (!state.on[k]) { state.on[k] = true; state.focus = k; }
+  else if (state.focus !== k) state.focus = k;
+  else { state.on[k] = false; state.focus = ["mod","dly","rev"].find(x => x !== k && state.on[x]) || null; }
+  renderBoard();
+}
+
+/* ================= patch / voice / channel selector ================= */
+const chan = rotary($("chanRot"), { labels: ["1","2","3","4","5","6"], value: state.slot, cap: "Channel", full: VOICES, size: 200, fs: 20, onChange: i => { state.slot = i; renderPatch(); } });
+function renderPatch() {
+  vfd($("pTxt"), `${state.slot + 1} ${NAMES[state.slot]}`); $("pSub").textContent = VOICES[state.slot];
+  vfd($("vTxt"), VOICES[state.slot]);
+  vfd($("chTxt"), `${state.slot + 1} ${NAMES[state.slot]}`); $("chVoice").textContent = VOICES[state.slot];
+  chan.set(state.slot);
+  $("presets").innerHTML = NAMES.map((n, i) => `<button class="preset" data-i="${i}" aria-label="Patch ${i + 1}, ${n}"><span class="lamp${i === state.slot ? " red" : ""}"></span>
+      <span class="n">${["I","II","III","IV","V","VI"][i]}</span><span class="t">${n}</span></button>`).join("");
+  document.querySelectorAll("#presets .preset").forEach(b => b.onclick = () => { state.slot = +b.dataset.i; renderPatch(); });
+  renderStage();
+}
+const step = d => { state.slot = (state.slot + d + 6) % 6; renderPatch(); };
+$("prev").onclick = () => step(-1); $("next").onclick = () => step(1); $("vprev").onclick = () => step(-1); $("vnext").onclick = () => step(1);
+
+/* plate switches + tap */
+["pw","man","wr","fsMode","axis"].forEach(id => $(id).onclick = e => e.currentTarget.classList.toggle("down"));
+let taps = [];
+function tapTempo() { const now = performance.now(); taps = taps.filter(t => now - t < 2000); taps.push(now); if (taps.length < 2) return;
+  state.bpm = Math.round(60000 / ((taps.at(-1) - taps[0]) / (taps.length - 1))); $("bpm").textContent = state.bpm + " BPM"; const st = $("stBpm"); if (st) vfd(st, `${state.bpm} BPM`); }
+$("tap").onclick = e => { const b = e.currentTarget; b.classList.remove("down"); setTimeout(() => b.classList.add("down"), 110); tapTempo(); };
+
+/* ================= cabrig ================= */
+function renderCab() { vfd($("cTxt"), CABS[state.cab]); }
+$("cprev").onclick = () => { state.cab = (state.cab + CABS.length - 1) % CABS.length; renderCab(); };
+$("cnext").onclick = () => { state.cab = (state.cab + 1) % CABS.length; renderCab(); };
+rotary($("micRot"), { labels: ["57","421","67","414","121","160"], value: 0, cap: "Mic", full: ["Dynamic 57","Dynamic 421","Condenser 67","Condenser 414","Ribbon 121","Ribbon 160"], size: 170, fs: 19 });
+rotary($("roomRot"), { labels: ["Off","S","S·D","L","L·D","Ch"], value: 3, cap: "Room", full: ["Off","Small room","Small damped","Large room","Large damped","Chamber"], size: 170, fs: 19 });
+renderCab();
+
+/* ================= library shelf ================= */
+function renderLib(g = "All") {
+  const gs = ["All","Rock","Metal","Blues","Surf","Pop","Backup"];
+  $("genres").innerHTML = gs.map(x => `<button class="${x === g ? "on" : ""}">${x}</button>`).join("");
+  document.querySelectorAll("#genres button").forEach(c => c.onclick = () => renderLib(c.textContent));
+  const list = LIB.map((l, i) => [l, i]).filter(([l]) => g === "All" || l[1] === g);
+  if (!list.some(([, i]) => i === state.tape) && list.length) state.tape = list[0][1];
+  $("tapes").innerHTML = list.map(([l, i]) => `<button class="cass${i === state.tape ? " sel" : ""}" data-i="${i}" style="--stripe:${l[3]}" aria-label="${l[0]}">
+      <span class="lbl"><b>${l[0]}</b><i>${l[1]} · ${l[2]}</i></span><span class="win"></span><span class="holes"></span></button>`).join("");
+  document.querySelectorAll("#tapes .cass").forEach(c => c.onclick = () => { state.tape = +c.dataset.i; renderLib(g); });
+  const sel = LIB[state.tape]; $("selName").textContent = sel ? sel[0] : ""; $("loadBtn").textContent = sel && sel[1] === "Backup" ? "Restore" : "Load";
+}
+renderLib();
+
+/* ================= tuner ================= */
+(function () {
+  let g = "";
+  for (let c = -50; c <= 50; c += 5) { const a = (c * .9) * Math.PI / 180, r1 = 205, r2 = c % 25 === 0 ? 180 : 192;
+    const col = Math.abs(c) >= 30 ? "#9e1408" : Math.abs(c) <= 5 ? "#155c2e" : "#3a2a10";
+    g += `<line x1="${(300 + r1 * Math.sin(a)).toFixed(1)}" y1="${(300 - r1 * Math.cos(a)).toFixed(1)}" x2="${(300 + r2 * Math.sin(a)).toFixed(1)}" y2="${(300 - r2 * Math.cos(a)).toFixed(1)}" stroke="${col}" stroke-width="${c % 25 === 0 ? 3 : 1.8}"/>`;
+    if (c % 25 === 0) g += `<text x="${(300 + 160 * Math.sin(a)).toFixed(1)}" y="${(300 - 160 * Math.cos(a) + 6).toFixed(1)}" text-anchor="middle" font-family="Oswald" font-weight="600" font-size="18" fill="${col}">${c > 0 ? "+" + c : c}</text>`; }
+  const a0 = -45 * Math.PI / 180, a1 = 45 * Math.PI / 180;
+  g += `<path d="M${300 + 208 * Math.sin(a0)} ${300 - 208 * Math.cos(a0)} A208 208 0 0 1 ${300 + 208 * Math.sin(a1)} ${300 - 208 * Math.cos(a1)}" fill="none" stroke="#3a2a10" stroke-width="1.5"/>`;
+  $("scale").innerHTML = g;
+})();
+const STR = ["E","A","D","G","B","E"];
+$("strings").innerHTML = STR.map(s => `<span><i class="lamp dimgreen"></i>${s}</span>`).join("");
+let ts = 1, tc = 18, shown = 18;
+setInterval(() => {
+  if (!$("p-tuner").classList.contains("on")) return;
+  tc += (Math.random() - .6) * 5; if (Math.abs(tc) < 1.5 && Math.random() < .12) { ts = (ts + 1) % 6; tc = (Math.random() - .5) * 60; }
+  tc = Math.max(-50, Math.min(50, tc)); shown += (tc - shown) * .35;
+  $("needle").setAttribute("transform", `rotate(${(shown * .9).toFixed(2)} 300 300)`);
+  const c = Math.round(shown);
+  vfd($("tTxt"), `${STR[ts]} ${c >= 0 ? "+" : "-"}${String(Math.abs(c)).padStart(2, "0")}`);
+  $("tNote").textContent = STR[ts]; $("tState").textContent = c > 4 ? "a touch sharp" : c < -4 ? "a touch flat" : "in tune";
+  $("lFlat").className = "lamp" + (c < -4 ? " red" : ""); $("lOk").className = "lamp" + (Math.abs(c) <= 4 ? " green" : ""); $("lSharp").className = "lamp" + (c > 4 ? " red" : "");
+  document.querySelectorAll("#strings .lamp").forEach((l, i) => l.className = "lamp " + (i === ts ? "green" : "dimgreen"));
+}, 90);
+
+/* ================= stage ================= */
+function renderStage() {
+  vfd($("sTxt"), `${state.slot + 1} ${NAMES[state.slot]}`); $("sVoice").textContent = VOICES[state.slot];
+  const live = [["mod","Mod"],["dly","Echo"],["rev","Reverb"],["gate","Gate"]].filter(([k]) => state.on[k]).map(([, n]) => n);
+  $("sFx").textContent = live.length ? live.join(" · ") : "Dry";
+  $("psw").innerHTML = NAMES.map((n, i) => `<button class="fs${i === state.slot ? " on" : ""}" data-i="${i}" aria-label="Patch ${i + 1}, ${n}">
+      <span class="lamp${i === state.slot ? " red" : ""}"></span><span class="tag">${n}</span><span class="sw"></span><span class="num">${["I","II","III","IV","V","VI"][i]}</span></button>`).join("");
+  document.querySelectorAll("#psw .fs").forEach(f => f.onclick = () => { state.slot = +f.dataset.i; renderPatch(); });
+  const fx = [["mod","Mod"],["dly","Echo"],["rev","Reverb"],["gate","Gate"]];
+  $("fsw").innerHTML = fx.map(([k, n]) => `<button class="fs${state.on[k] ? " fxon" : ""}" data-fx="${k}"><span class="lamp${state.on[k] ? " green" : ""}"></span><span class="eng">${n}</span><span class="sw"></span><span class="num">${state.on[k] ? "On" : "Off"}</span></button>`).join("")
+    + `<button class="fs" id="stTap"><span class="lamp" id="stTapLamp"></span><span class="vfdwin bpmwin"><span class="vfdtxt" id="stBpm"></span></span><span class="sw"></span><span class="num">Tap</span></button>`;
+  vfd($("stBpm"), state.bpm ? `${state.bpm} BPM` : "--- BPM");
+  document.querySelectorAll("#fsw .fs[data-fx]").forEach(f => f.onclick = () => { const k = f.dataset.fx; state.on[k] = !state.on[k]; if (state.on[k] && k !== "gate") state.focus = k; renderBoard(); });
+  $("stTap").onclick = () => { tapTempo(); const l = $("stTapLamp"); l.className = "lamp green"; setTimeout(() => l.className = "lamp", 120); };
+}
+
+/* ================= settings rear panel ================= */
+rotary($("audioRot"), { labels: ["ST","CLN","RE"], value: 0, cap: "Mode", full: ["Stereo emulated","Mono / clean","Reamping"], size: 150, span: 120, fs: 22, light: true });
+pedalKnob($("musicKnob"), "Music", 90, 0, 127, true);
+
+/* ================= chrome ================= */
+document.querySelectorAll("div[data-k][data-label]").forEach(plateKnob);
+document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll("#tabs button").forEach(x => x.classList.toggle("on", x === b));
+  document.querySelectorAll(".page").forEach(p => p.classList.toggle("on", p.id === "p-" + b.dataset.p));
+  if (b.dataset.p === "amp") requestAnimationFrame(drawCables); });
+document.querySelectorAll("#devseg button").forEach(b => b.onclick = () => {
+  document.querySelectorAll("#devseg button").forEach(x => x.classList.toggle("on", x === b));
+  $("cab").className = "cab" + (b.dataset.dev === "phone" ? " phone" : ""); requestAnimationFrame(drawCables); });
+$("save").onclick = e => { const b = e.currentTarget; b.textContent = "SAVED"; setTimeout(() => b.textContent = "SAVE", 1200); };
+window.addEventListener("resize", () => requestAnimationFrame(drawCables));
+document.fonts && document.fonts.ready.then(() => requestAnimationFrame(drawCables));
+
+const h = location.hash;
+if (h.includes("phone") || window.innerWidth < 700) document.querySelector('#devseg [data-dev="phone"]').click();
+const tm = h.match(/tab=(\w+)/); if (tm) document.querySelector(`#tabs [data-p="${tm[1]}"]`)?.click();
+renderPatch(); renderBoard();
+// preview links: #y=600 scrolls the open screen (used for screenshots)
+const ym = h.match(/y=(\d+)/); if (ym) setTimeout(() => { document.querySelector(".page.on").scrollTop = +ym[1]; drawCables(); }, 50);
+</script>
+</body>
+</html>

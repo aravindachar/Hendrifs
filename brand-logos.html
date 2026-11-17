@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Name and Logo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&family=Damion&family=Great+Vibes&family=Pinyon+Script&family=Rouge+Script&family=Satisfy&family=Kaushan+Script&family=Playfair+Display+SC:wght@700&display=swap" rel="stylesheet">
+<style>
+:root { --page: #0c0b0a; --ink: #efe9dd; --dim: #9d958a; --line: #2a2622; --gold: #e2c27a; }
+:root[data-theme="light"] { --page: #f3eee4; --ink: #1d1a16; --dim: #6c645a; --line: #dcd3c4; --gold: #8f6a22; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --page: #f3eee4; --ink: #1d1a16; --dim: #6c645a; --line: #dcd3c4; --gold: #8f6a22; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink); font: 400 16px/1.5 Oswald, "Arial Narrow", sans-serif; letter-spacing: .02em; }
+main { max-width: 1240px; margin: 0 auto; padding: 36px 16px 80px; }
+h1 { font: 400 58px/1 Damion, cursive; color: var(--gold); margin: 0 0 6px; }
+.lede { color: var(--dim); max-width: 72ch; margin: 0 0 24px; }
+.panel { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.row > .lab { font: 600 13px/1 Oswald; letter-spacing: .24em; text-transform: uppercase; color: var(--dim); width: 74px; }
+.chip { border: 1px solid var(--line); background: none; color: var(--ink); font: 500 15px/1 Oswald; letter-spacing: .06em; padding: 9px 14px; border-radius: 999px; cursor: pointer; }
+.chip.on { background: var(--ink); color: var(--page); border-color: var(--ink); }
+.chip small { color: var(--dim); margin-left: 6px; font-size: 12px; letter-spacing: .02em; }
+.chip.on small { color: inherit; opacity: .7; }
+input.own { height: 38px; border-radius: 999px; border: 1px solid var(--line); background: none; color: var(--ink); padding: 0 16px; font: 500 15px Oswald; width: 200px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 370px), 1fr)); gap: 40px 28px; }
+.opt { background: none; border: 0; padding: 0; color: inherit; font: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+.opt svg { width: 100%; max-width: 360px; height: auto; display: block; overflow: visible; filter: drop-shadow(0 22px 26px rgba(0,0,0,.45)); transition: transform .25s; }
+.opt:hover svg { transform: translateY(-4px); }
+.opt.picked svg { filter: drop-shadow(0 0 0 transparent) drop-shadow(0 0 26px rgba(226,194,122,.55)); }
+.cap b { font: 600 17px/1 Oswald; letter-spacing: .14em; text-transform: uppercase; }
+.cap span { display: block; color: var(--dim); font-size: 14px; margin-top: 4px; }
+.opt.picked .cap b { color: var(--gold); }
+.free { display: flex; gap: 28px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.free .w { line-height: 1.1; white-space: nowrap; }
+.pick { position: sticky; bottom: 16px; margin-top: 40px; padding: 14px 18px; border-radius: 12px; background: #161310; color: #efe9dd; border: 1px solid #2c2620; }
+.pick b { color: #e2c27a; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Name &amp; logo</h1>
+  <p class="lede">Classic guitar-maker style: a hand-lettered script inlaid in mother-of-pearl on a black gloss headstock, with a small emblem underneath.
+    Choose a name, or type your own; every lettering style below redraws with it. Underneath each headstock is the bare logo in gold and in black,
+    with nothing behind it. Tap the one you want, then tell me the name and the number.</p>
+
+  <div class="panel">
+    <div class="row" id="names"><span class="lab">Name</span></div>
+    <div class="row"><span class="lab"></span><input class="own" id="own" placeholder="…or type your own" maxlength="14" spellcheck="false"></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="pick" id="pick">Nothing picked yet.</div>
+</main>
+
+<script>
+const NAMES = [
+  ["Ashbury", "warm, old-England workshop"], ["Kingsley", "regal, stage-ready"], ["Marlowe", "smoky blues club"],
+  ["Calloway", "big-band swagger"], ["Harlan", "short, rugged, American"], ["Wexford", "Irish pub-rock"], ["Hendrifs", "the current name"],
+];
+// Lettering styles: font, size, slant, letter-spacing, emblem
+const STYLES = [
+  { f: "Damion", s: 74, name: "Workshop", vibe: "thick brush script, the closest to a vintage maker's mark", emb: "valve" },
+  { f: "Kaushan Script", s: 60, name: "Road Case", vibe: "heavier, punchier brush, made for rock", emb: "bolt" },
+  { f: "Great Vibes", s: 76, name: "Ballroom", vibe: "fine copperplate swashes, very elegant", emb: "fleur" },
+  { f: "Pinyon Script", s: 62, name: "Engraver", vibe: "formal engraved script, like a jeweller's plate", emb: "fleur" },
+  { f: "Rouge Script", s: 78, name: "Jazz Club", vibe: "loose, smoky, late-night", emb: "valve" },
+  { f: "Satisfy", s: 66, name: "Signature", vibe: "a confident hand signature", emb: "bolt" },
+];
+
+let name = "Ashbury", picked = null;
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// small inlay emblems, drawn in the same pearl
+const EMB = {
+  valve: `<g transform="translate(180 330)"><path d="M-17 26 V-12 Q-17 -36 0 -36 Q17 -36 17 -12 V26 Z" fill="url(#pearl)"/><rect x="-22" y="26" width="44" height="10" rx="3" fill="url(#pearl)"/>
+    <rect x="-4" y="-18" width="8" height="34" rx="2" fill="#141210"/><g fill="url(#pearl)"><rect x="-13" y="38" width="5" height="10"/><rect x="-2.5" y="38" width="5" height="10"/><rect x="8" y="38" width="5" height="10"/></g></g>`,
+  fleur: `<g transform="translate(180 330)" fill="url(#pearl)"><path d="M0 -40 C10 -24 12 -10 0 6 C-12 -10 -10 -24 0 -40 Z"/>
+    <path d="M-6 0 C-30 -4 -40 -26 -26 -34 C-16 -38 -10 -26 -8 -14 Z"/><path d="M6 0 C30 -4 40 -26 26 -34 C16 -38 10 -26 8 -14 Z"/>
+    <rect x="-24" y="6" width="48" height="7" rx="3"/><path d="M-4 13 L0 34 L4 13 Z"/></g>`,
+  bolt: `<g transform="translate(180 330)"><path d="M8 -40 L-14 4 H0 L-10 42 L16 -6 H2 L14 -40 Z" fill="url(#pearl)"/></g>`,
+};
+
+function headstock(style, i) {
+  const n = esc(name), fs = Math.round(style.s * Math.min(1, 7.5 / Math.max(5, name.length)));
+  return `<svg viewBox="0 0 360 520" role="img" aria-label="${n} logo, ${style.name} style">
+  <defs>
+    <linearGradient id="pearl" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset=".18" stop-color="#f3e9ff"/><stop offset=".34" stop-color="#e3f6ff"/><stop offset=".5" stop-color="#fff4e2"/>
+      <stop offset=".66" stop-color="#ffe3f1"/><stop offset=".82" stop-color="#e6fff4"/><stop offset="1" stop-color="#fdfbf6"/></linearGradient>
+    <linearGradient id="gloss" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#050505"/><stop offset=".28" stop-color="#262423"/><stop offset=".34" stop-color="#0b0b0b"/><stop offset="1" stop-color="#030303"/></linearGradient>
+    <linearGradient id="nickel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#a8a8ae"/><stop offset="1" stop-color="#e8e8ec"/></linearGradient>
+    <linearGradient id="maple" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a1d0c"/><stop offset=".5" stop-color="#5a2f14"/><stop offset="1" stop-color="#3a1d0c"/></linearGradient>
+    <filter id="sheen"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="${i + 3}"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .18 0"/><feComposite in2="SourceGraphic" operator="in"/><feBlend in2="SourceGraphic" mode="screen"/></filter>
+  </defs>
+  <!-- neck -->
+  <rect x="122" y="440" width="116" height="80" fill="url(#maple)"/>
+  <rect x="118" y="436" width="124" height="10" rx="2" fill="#efe6cf"/>
+  <!-- headstock: our own crowned three-a-side shape -->
+  <path d="M122 440 L84 120 Q78 70 104 52 Q132 34 156 60 Q170 74 180 58 Q190 74 204 60 Q228 34 256 52 Q282 70 276 120 L238 440 Z" fill="url(#gloss)" stroke="#efe6cf" stroke-width="3"/>
+  <path d="M122 440 L84 120 Q78 70 104 52 Q132 34 156 60 Q170 74 180 58 Q190 74 204 60 Q228 34 256 52 Q282 70 276 120 L238 440 Z" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="1" transform="translate(4 4) scale(.976)"/>
+  <!-- tuner bushings and truss-rod cover -->
+  ${[150, 250, 350].map(y => { const dx = (y - 120) * .124; return `<circle cx="${102 + dx}" cy="${y}" r="9" fill="url(#nickel)"/><circle cx="${102 + dx}" cy="${y}" r="3.5" fill="#222"/>
+    <circle cx="${258 - dx}" cy="${y}" r="9" fill="url(#nickel)"/><circle cx="${258 - dx}" cy="${y}" r="3.5" fill="#222"/>`; }).join("")}
+  <path d="M164 410 L196 410 L204 444 L156 444 Z" fill="#111" stroke="#efe6cf" stroke-width="2"/><circle cx="170" cy="426" r="2" fill="url(#nickel)"/><circle cx="190" cy="426" r="2" fill="url(#nickel)"/>
+  <!-- inlaid logo + emblem -->
+  <g filter="url(#sheen)">
+    <text class="inlay" x="180" y="${200 + fs * .2}" text-anchor="middle" font-family="${style.f}" font-size="${fs}" fill="url(#pearl)" transform="rotate(-6 180 190)">${n}</text>
+    ${EMB[style.emb]}
+  </g>
+  <!-- gloss highlight -->
+  <path d="M104 64 Q90 90 96 140 L118 410" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="6" stroke-linecap="round"/>
+</svg>`;
+}
+
+function render() {
+  const g = document.getElementById("grid"); g.innerHTML = "";
+  STYLES.forEach((s, i) => {
+    const b = document.createElement("button"); b.className = "opt" + (picked === i ? " picked" : "");
+    const big = Math.round(s.s * .78 * Math.min(1, 7.5 / Math.max(5, name.length)));
+    b.innerHTML = headstock(s, i) +
+      `<div class="free"><span class="w" style="font-family:'${s.f}';font-size:${big}px;background:linear-gradient(180deg,#fff1bf,#e2c27a 50%,#8f6a22);-webkit-background-clip:text;background-clip:text;color:transparent;padding:0 8px;transform:rotate(-6deg);display:inline-block">${esc(name)}</span>
+        <span class="w" style="font-family:'${s.f}';font-size:${Math.round(big * .7)}px;color:var(--ink);transform:rotate(-6deg);display:inline-block;padding:0 6px">${esc(name)}</span></div>
+      <div class="cap"><b>#${i + 1} · ${s.name}</b><span>${s.vibe}</span></div>`;
+    b.onclick = () => { picked = i; render(); };
+    g.appendChild(b);
+    // fit the inlaid name inside the headstock (about 150 units wide at that height)
+    const tx = b.querySelector('text.inlay'); const w = tx.getComputedTextLength();
+    if (w > 150) tx.setAttribute('font-size', (parseFloat(tx.getAttribute('font-size')) * 150 / w).toFixed(1));
+  });
+  document.getElementById("pick").innerHTML = picked === null ? "Nothing picked yet. Choose a name, then tap a headstock."
+    : `You picked <b>${esc(name)}</b> in <b>#${picked + 1} · ${STYLES[picked].name}</b>. Tell me “${esc(name)}, logo ${picked + 1}” and I'll put it in the app.`;
+}
+
+const nm = document.getElementById("names");
+NAMES.forEach(([n, v]) => { const c = document.createElement("button"); c.className = "chip" + (n === name ? " on" : ""); c.innerHTML = `${n}<small>${v}</small>`;
+  c.onclick = () => { name = n; document.getElementById("own").value = ""; nm.querySelectorAll(".chip").forEach(x => x.classList.toggle("on", x === c)); render(); }; nm.appendChild(c); });
+document.getElementById("own").oninput = e => { const v = e.target.value.trim(); if (!v) return; name = v; nm.querySelectorAll(".chip").forEach(x => x.classList.remove("on")); render(); };
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(render);
+render();
+</script>
+</body>
+</html>

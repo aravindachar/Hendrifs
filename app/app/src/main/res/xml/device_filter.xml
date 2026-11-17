@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Any Blackstar device (vendor 0x27D4). ID:Core V4 is product 0x0013 = 19. -->
+    <usb-device vendor-id="10196" />
+</resources>
