@@ -8,73 +8,81 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.random.Random
 
-/** A simulated ID:Core that answers like the real protocol, so the whole app can be tried without hardware. */
+/**
+ * A simulated ID:Core V4 that answers with the formats captured from a real amp (research/V4-PROTOCOL.md):
+ * value blocks, echoes of every command, patch select with its sound, tuner stream. Lets the app run without hardware.
+ */
 class FakeAmpTransport : AmpTransport {
     override val description = "Demo amp (simulated)"
 
     private val replies = LinkedBlockingQueue<ByteArray>()
-    private val names = mutableListOf("CLEAN ONE", "CLEAN ARP", "CRUNCH 80S", "SUPER CRUNCH", "LEAD", "HIGH GAIN")
-    private val globals = mutableMapOf(Global.SWS to 1, Global.MANUAL to 0, Global.TUNER to 0, Global.NOISEGATE to 0)
-    private var slot = 3
+    private val names = mutableListOf("Classic Clean", "Boutique Clean", "Classic Crunch", "Modern Drive", "Smooth Solo", "Tight Metal Rhythm")
+    private val globals = IntArray(IdCoreProtocol.TABLE).also { it[Global.FS_PATCH_A] = 1; it[Global.FS_PATCH_B] = 4 }
+    private var slot = 2
     private var tunerString = 1
     private var tunerCents = 18.0
     private var lastTunerTick = 0L
 
-    private val presets = Array(IdCoreProtocol.SLOTS) { i ->
-        IdCoreProtocol.pad(0x02, 0x05, i + 1, 0x2A).also { p ->
-            fun put(c: Control, v: Int) { p[c.offset] = (v and 0xFF).toByte(); if (c.twoBytes) p[c.offset + 1] = (v shr 8).toByte() }
-            put(Control.VOICE, i); put(Control.GAIN, listOf(20, 30, 70, 90, 100, 115)[i]); put(Control.VOLUME, 50)
-            put(Control.BASS, 72); put(Control.MIDDLE, 58); put(Control.TREBLE, 80); put(Control.ISF, 64)
-            put(Control.RESONANCE, 50); put(Control.PRESENCE, 76)
-            put(Control.DELAY_ON, 1); put(Control.REVERB_ON, 1); put(Control.FX_FOCUS, 3)
-            put(Control.DELAY_TYPE, 1); put(Control.DELAY_FEEDBACK, 10); put(Control.DELAY_LEVEL, 40); put(Control.DELAY_TIME, 400)
-            put(Control.REVERB_SIZE, 12); put(Control.REVERB_LEVEL, 40); put(Control.MOD_LEVEL, 60); put(Control.MOD_SPEED, 50)
-        }
+    private val patches = Array(IdCoreProtocol.SLOTS) { i ->
+        IdCoreProtocol.encode(mapOf(
+            Control.VOICE to i, Control.GAIN to listOf(30, 59, 70, 95, 70, 127)[i], Control.VOLUME to 50,
+            Control.BASS to 97, Control.MIDDLE to 41, Control.TREBLE to 46, Control.ISF to 57,
+            Control.RESONANCE to 127, Control.PRESENCE to 64,
+            Control.DELAY_ON to (i % 2), Control.REVERB_ON to 1, Control.FX_FOCUS to 3,
+            Control.MOD_TYPE to 1, Control.MOD_SEGVAL to 7, Control.MOD_LEVEL to 9, Control.MOD_SPEED to 36, Control.MOD_DEPTH to 40,
+            Control.DELAY_TYPE to 1, Control.DELAY_FEEDBACK to 24, Control.DELAY_LEVEL to 78, Control.DELAY_TIME to 400,
+            Control.REVERB_TYPE to 3, Control.REVERB_SIZE to 4, Control.REVERB_LEVEL to 61,
+            Control.GATE_SENS to 25, Control.GATE_AMOUNT to (if (i >= 4) 60 else 30),
+        ))
     }
-    private val live = presets[slot - 1].copyOf().also { it[0] = 0x03; it[1] = 0x01; it[2] = 0x00; it[3] = 0x2A }
+    private val live = patches[slot - 1].copyOf()
+
+    private fun block(kind: Int, first: Int, t: IntArray, count: Int, b2: Int = 0) =
+        IdCoreProtocol.pad(kind, first, b2, count, *IntArray(count) { t[first + it] })
 
     override fun write(packet: ByteArray) {
         val b0 = packet[0].toInt() and 0xFF
         val b1 = packet[1].toInt() and 0xFF
         val b2 = packet[2].toInt() and 0xFF
+        val n = packet[3].toInt() and 0xFF
         when {
             b0 == 0x81 -> {
-                replies.put(live.copyOf())
-                replies.put(IdCoreProtocol.pad(0x08, Global.PATCH_NUMBER, 0x00, 0x01, slot))
-                replies.put(IdCoreProtocol.pad(0x08, Global.MANUAL, 0x00, 0x01, globals[Global.MANUAL] ?: 0))
+                replies.put(IdCoreProtocol.pad(0x07, 0x00, 0x00, 0x03, 0x01, 0x00, 0x04))
+                replies.put(block(0x03, 1, live.copyOf().also { it[Control.VOLUME.id] = 0 }, 0x2A))
+                replies.put(block(0x08, 1, globals, 0x2A))
+                replies.put(IdCoreProtocol.pad(0x02, 0x06, slot, 0x3C, *IntArray(0x2B) { patches[slot - 1][it + 1] }))
             }
             b0 == 0x03 -> {
-                live[b1 + 3] = packet[4]
-                if ((packet[3].toInt() and 0xFF) == 0x02) live[b1 + 4] = packet[5]
+                for (i in 0 until n) live[b1 + i] = packet[4 + i].toInt() and 0xFF
+                replies.put(packet.copyOf())                                        // the real amp echoes everything
             }
             b0 == 0x08 -> {
-                globals[b1] = packet[4].toInt() and 0xFF
-                replies.put(IdCoreProtocol.pad(0x08, b1, 0x00, 0x01, globals[b1]!!))
+                for (i in 0 until n) globals[b1 + i] = packet[4 + i].toInt() and 0xFF
+                if (b1 == Global.TUNER && globals[Global.TUNER] == 0) replies.put(packet.copyOf())
             }
-            b0 == 0x02 && b1 == 0x01 -> {
-                slot = b2
-                presets[slot - 1].copyInto(live, 4, 4, 64)
-                replies.put(IdCoreProtocol.pad(0x02, 0x06, slot, 0x00))
-                replies.put(live.copyOf())
-            }
+            b0 == 0x02 && b1 == 0x01 && b2 in 1..IdCoreProtocol.SLOTS -> select(b2)
             b0 == 0x02 && b1 == 0x02 -> names[b2 - 1] = IdCoreProtocol.decodeName(packet)
-            b0 == 0x02 && b1 == 0x03 -> {
-                packet.copyInto(presets[b2 - 1], 4, 4, 64)
-                replies.put(IdCoreProtocol.pad(0x02, 0x03, b2, 0x00))
-            }
+            b0 == 0x02 && b1 == 0x03 -> for (i in 0 until n) patches[b2 - 1][i + 1] = packet[4 + i].toInt() and 0xFF
             b0 == 0x02 && b1 == 0x04 -> {
-                val p = IdCoreProtocol.pad(0x02, 0x04, b2, 0x15)
-                names.getOrElse(b2 - 1) { "" }.forEachIndexed { i, ch -> p[4 + i] = ch.code.toByte() }
-                replies.put(p)
+                val name = names.getOrElse(b2 - 1) { "" }
+                replies.put(IdCoreProtocol.pad(0x02, 0x04, b2, 0x15, *name.map { it.code }.toIntArray()))
             }
-            b0 == 0x02 && b1 == 0x05 -> replies.put(presets[b2 - 1].copyOf())
+            b0 == 0x02 && b1 == 0x05 -> replies.put(IdCoreProtocol.pad(0x02, 0x05, b2, 0x2A, *IntArray(0x2A) { patches[b2 - 1][it + 1] }))
         }
     }
 
+    private fun select(s: Int) {
+        slot = s
+        val vol = live[Control.VOLUME.id]
+        patches[s - 1].copyInto(live); live[Control.VOLUME.id] = vol
+        replies.put(IdCoreProtocol.pad(0x02, 0x06, s, 0x3C, *IntArray(0x2B) { patches[s - 1][it + 1] }))
+        replies.put(block(0x03, 1, live.copyOf().also { it[Control.VOLUME.id] = 0 }, 0x29))
+    }
+
     override fun read(): ByteArray? {
-        replies.poll(40, TimeUnit.MILLISECONDS)?.let { return it }
+        replies.poll(8, TimeUnit.MILLISECONDS)?.let { return it }
         // While the tuner is on, report a slowly drifting note like a guitar being tuned.
-        if (globals[Global.TUNER] == 1 && System.currentTimeMillis() - lastTunerTick > 120) {
+        if (globals[Global.TUNER] == 1 && System.currentTimeMillis() - lastTunerTick > 100) {
             lastTunerTick = System.currentTimeMillis()
             tunerCents += (Random.nextDouble() - 0.6) * 5
             if (abs(tunerCents) < 1.5 && Random.nextDouble() < 0.12) { tunerString = (tunerString + 1) % 6; tunerCents = (Random.nextDouble() - .5) * 60 }

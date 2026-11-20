@@ -47,8 +47,8 @@ class UsbHidTransport(manager: UsbManager, device: UsbDevice) : AmpTransport {
 
     override fun write(packet: ByteArray) {
         // Prefer the interrupt OUT endpoint; fall back to HID SET_REPORT (output report, id 0).
-        var n = epOut?.let { connection.bulkTransfer(it, packet, packet.size, 1000) } ?: -1
-        if (n < 0) n = connection.controlTransfer(0x21, 0x09, 0x0200, hid.id, packet, packet.size, 1000)
+        var n = epOut?.let { connection.bulkTransfer(it, packet, packet.size, 250) } ?: -1
+        if (n < 0) n = connection.controlTransfer(0x21, 0x09, 0x0200, hid.id, packet, packet.size, 250)
         if (n != packet.size) throw IOException("USB write failed ($n/${packet.size})")
     }
 
@@ -58,7 +58,7 @@ class UsbHidTransport(manager: UsbManager, device: UsbDevice) : AmpTransport {
             if (!request.queue(buffer)) throw IOException("Could not queue HID read")
             queued = true
         }
-        val done = try { connection.requestWait(40) } catch (_: TimeoutException) { return null }
+        val done = try { connection.requestWait(8) } catch (_: TimeoutException) { return null }
             ?: throw IOException("USB connection lost")
         if (done !== request) return null
         queued = false

@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="fonts/fonts.css">
 <style>
 :root {
-  --tolex: #121110; --piping: #e9dfc6;
+  --tolex: #000; --piping: #e9dfc6;
   --gold-1: #b48a35; --gold-2: #e7c76f; --gold-3: #c69d45; --gold-4: #f3dc93;
   --engrave: #1b140a; --engrave-dim: #4a3a1c;
   --cream: #efe6cf; --cream-dim: #a99d84;
@@ -30,21 +30,18 @@ body { color: var(--cream); font: 300 17px/1.55 var(--panel-font); letter-spacin
 button { font-family: inherit; }
 
 /* ================= the cabinet: the whole screen ================= */
-.cab { position: fixed; inset: 0; padding: 10px; background-color: var(--tolex); background-image: var(--tolex-bg); background-size: 4px 4px, 3px 3px; background-position: 0 0, 1px 2px; }
+.cab { position: fixed; inset: 0; padding: 10px; background: #000; }
 
-.corner { position: absolute; width: 34px; height: 34px; z-index: 5; pointer-events: none;
-  background: radial-gradient(circle at 35% 35%, #d9d4c9, #6f6a62 60%, #2c2a27); clip-path: polygon(0 0, 100% 0, 100% 30%, 30% 30%, 30% 100%, 0 100%); border-radius: 10px 0 0 0; }
-.corner.tl { top: 0; left: 0; } .corner.tr { top: 0; right: 0; transform: scaleX(-1); }
-.corner.bl { bottom: 0; left: 0; transform: scaleY(-1); } .corner.br { bottom: 0; right: 0; transform: scale(-1,-1); }
-.phone .corner { display: none; }
 .screen { height: 100%; border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; }
 
 /* top */
-.top { display: flex; align-items: center; gap: 16px; padding: 16px 26px 2px; flex-wrap: wrap; }
+.top { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; padding: 14px 26px 2px; }
 .logo { font: 400 46px/1 "Damion", var(--script); padding: 0 8px 4px 2px; transform: rotate(-6deg);
   background: linear-gradient(135deg,#ffffff 0%,#f1e6ff 18%,#dff4ff 34%,#fff2dc 50%,#ffe0ef 66%,#e2fff2 82%,#fdfbf6 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 2px 0 rgba(0,0,0,.8)); }
-.vfd { flex: 1; min-width: 240px; display: flex; align-items: center; gap: 10px; }
+.brand { display: flex; flex-direction: column; align-items: center; }
+.brand .by { margin-top: 2px; font: 600 11px/1 var(--panel-font); letter-spacing: .42em; text-transform: uppercase; color: #e7c76f; padding-left: .42em; }
+.topright { display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
 .vfdwin { flex: 1; min-width: 0; height: 50px; border-radius: 8px; padding: 0 14px; display: flex; align-items: center; gap: 12px; position: relative; overflow: hidden;
   background: linear-gradient(180deg, #1a0f06, #090502); border: 2px solid #2b2418; box-shadow: inset 0 3px 10px rgba(0,0,0,.9), 0 0 0 1px rgba(233,223,198,.25); }
 .vfdwin::after { content: ""; position: absolute; inset: 0; background: linear-gradient(170deg, rgba(255,255,255,.08), transparent 40%); pointer-events: none; }
@@ -127,10 +124,13 @@ button { font-family: inherit; }
 .group { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .knobs { display: flex; gap: 2px 6px; flex-wrap: wrap; justify-content: center; }
 .toggles { display: flex; gap: 18px; align-items: flex-end; }
-.voicewin { display: flex; align-items: center; gap: 8px; }
-.voicewin .vfdwin { height: 44px; width: 210px; flex: none; padding: 0 10px; justify-content: center; }
-.voicewin .vfdtxt { font-size: 15px; }
-.voicewin .brassbtn { width: 32px; height: 32px; font-size: 12px; }
+.voicelamps { display: grid; grid-template-columns: repeat(3, 92px); gap: 9px; }
+.voicelamps button { height: 48px; border: 0; border-radius: 8px; cursor: pointer; font: 600 13.5px/1.1 var(--panel-font); letter-spacing: .06em; text-transform: uppercase; color: var(--cream-dim);
+  background: linear-gradient(180deg, #2a2622, #121110); box-shadow: 0 3px 0 #050505, 0 5px 8px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08); position: relative; padding: 10px 2px 0; }
+.voicelamps button::before { content: ""; position: absolute; top: 7px; left: 50%; width: 22px; height: 4px; margin-left: -11px; border-radius: 2px; background: #3a1410; }
+.voicelamps button.on { color: var(--cream); transform: translateY(2px); box-shadow: 0 1px 0 #050505, 0 2px 4px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08); }
+.voicelamps button.on::before { background: var(--jewel); box-shadow: 0 0 8px var(--jewel), 0 0 16px rgba(255,40,20,.55); }
+.voicelamps.off button { opacity: .5; }
 .grille { height: 96px; border-radius: 8px; margin-top: 16px; position: relative; background-color: #2b2416;
   background-image: repeating-linear-gradient(45deg, rgba(214,190,140,.55) 0 2px, transparent 2px 7px), repeating-linear-gradient(-45deg, rgba(120,98,58,.6) 0 2px, transparent 2px 7px), repeating-linear-gradient(45deg, rgba(0,0,0,.35) 0 1px, transparent 1px 14px);
   box-shadow: inset 0 8px 18px rgba(0,0,0,.7), 0 0 0 2px var(--piping), 0 0 0 4px #0a0908; }
@@ -203,6 +203,10 @@ button { font-family: inherit; }
 .cass .holes { position: absolute; left: 50%; bottom: 0; width: 96px; margin-left: -48px; height: 22px; border-radius: 4px 4px 0 0; background: #141210; clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%); }
 .plank { height: 22px; margin: 0 -18px; border-radius: 3px; background: repeating-linear-gradient(90deg, rgba(0,0,0,.08) 0 2px, transparent 2px 9px), linear-gradient(180deg, #8a5a2b, #5c3a18 60%, #3a230d); box-shadow: 0 10px 18px rgba(0,0,0,.6), inset 0 2px 0 rgba(255,220,170,.25); }
 .shelfacts { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.search { flex: 1 1 220px; max-width: 340px; height: 38px; border-radius: 8px; border: 1px solid var(--gold-2); background: rgba(0,0,0,.35); color: var(--cream);
+  font: 400 16px/1 var(--panel-font); letter-spacing: .06em; padding: 0 12px; }
+.search::placeholder { color: var(--cream-dim); }
+.songnote { font: 400 14px/1.5 var(--panel-font); color: var(--cream-dim); letter-spacing: .04em; margin: 14px 4px 0; }
 .shelfacts .sel-name { font: 500 17px/1 var(--panel-font); letter-spacing: .1em; text-transform: uppercase; color: var(--cream); margin-right: auto; }
 .ghost { height: 38px; border-radius: 6px; border: 1px solid rgba(233,223,198,.45); background: none; color: var(--cream); font: 600 13px/1 var(--panel-font); letter-spacing: .14em; cursor: pointer; text-transform: uppercase; padding: 0 14px; }
 .ghost:disabled { opacity: .35; }
@@ -313,9 +317,9 @@ button { font-family: inherit; }
 
 /* ================= phone ================= */
 .phone .top { padding: 18px 20px 2px; }
-.phone .logo { font-size: 34px; flex: 1; }
+.phone .logo { font-size: 34px; } .phone .brand .by { font-size: 9px; letter-spacing: .3em; } .phone .topright { gap: 8px; } .phone .top { gap: 8px; }
 .phone .status span { display: none; }
-.phone .vfd { order: 3; flex-basis: 100%; min-width: 0; }
+
 .phone .tabs { padding: 8px 22px 14px; gap: 4px 20px; }
 .phone .page { padding: 4px 16px 30px; }
 .phone .head { padding: 14px 10px 14px; }
@@ -323,7 +327,7 @@ button { font-family: inherit; }
 .phone .platerow { justify-content: center; }
 .phone .vknob { width: 92px; } .phone .vknob svg { width: 92px; height: 92px; }
 .phone .vknob.sm { width: 80px; } .phone .vknob.sm svg { width: 80px; height: 80px; }
-.phone .voicewin .vfdwin { width: 180px; }
+.phone .voicelamps { grid-template-columns: repeat(3, 84px); gap: 7px; } .phone .voicelamps button { height: 44px; font-size: 12.5px; }
 .phone .grille { height: 70px; }
 .phone .board { padding: 34px 14px 34px; }
 .phone .pedals { gap: 36px 30px; }
@@ -366,20 +370,15 @@ button { font-family: inherit; }
 </head>
 <body>
 <div class="cab">
-  <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
   <div class="screen">
     <div class="top">
-      <div class="logo">Hendrifs</div>
-      <div class="vfd">
-        <button class="brassbtn" id="prev" aria-label="Previous patch">◀</button>
-        <div class="vfdwin"><span class="vfdtxt" id="pTxt"></span><span class="vfdsub" id="pSub"></span></div>
-        <button class="brassbtn" id="next" aria-label="Next patch">▶</button>
-      </div>
-      <button class="status none" id="status"><i></i><span id="statusTxt">No amp</span></button>
-      <button class="savebtn" id="save">SAVE</button>
+      <span class="topgap"></span>
+      <div class="brand"><div class="logo">Hendrifs</div><span class="by">by Rizzvind</span></div>
+      <div class="topright"><button class="status none" id="status"><i></i><span id="statusTxt">No amp</span></button>
+      <button class="savebtn" id="save">SAVE</button></div>
     </div>
     <nav class="tabs" id="tabs">
-      <button class="on" data-p="amp">Amp</button><button data-p="cab">CabRig</button><button data-p="patches">Patches</button>
+      <button class="on" data-p="amp">Amp</button><button data-p="cab">CabRig</button><button data-p="patches">Patches</button><button data-p="songs">Songs</button>
       <button data-p="tuner">Tuner</button><button data-p="stage">Stage</button><button data-p="settings">Settings</button>
     </nav>
 
@@ -391,9 +390,7 @@ button { font-family: inherit; }
           <span class="screw s-a"></span><span class="screw s-b"></span><span class="screw s-c"></span><span class="screw s-d"></span>
           <div class="platerow">
             <div class="group">
-              <div class="voicewin"><button class="brassbtn" id="vprev" aria-label="Previous voice">◀</button>
-                <div class="vfdwin"><span class="vfdtxt" id="vTxt"></span></div>
-                <button class="brassbtn" id="vnext" aria-label="Next voice">▶</button></div>
+              <div class="voicelamps" id="voices" role="radiogroup" aria-label="Voice"></div>
               <div class="knobs"><div data-c="GAIN" data-label="Gain"></div><div data-c="VOLUME" data-label="Volume" data-r="global"></div></div>
               <span class="groupname">Preamp</span>
             </div>
@@ -405,7 +402,6 @@ button { font-family: inherit; }
             <div class="group" style="justify-content:space-between;align-self:stretch">
               <div class="jewel" id="jewel" title="Connected"></div>
               <div class="toggles">
-                <button class="tsw" data-g="3"><span class="bat"></span><span class="lbls">Manual<br>Patch</span></button>
                 <button class="tsw" id="tap"><span class="bat"></span><span class="lbls">Tap<br><b id="bpm">—</b></span></button>
                 <button class="tsw" data-g="17"><span class="bat"></span><span class="lbls">Tuner<br>Off</span></button>
               </div>
@@ -452,8 +448,17 @@ button { font-family: inherit; }
       <div class="shelfhead"><h3>Library</h3><div class="genres" id="genres"></div></div>
       <div class="shelf"><div class="tapes" id="tapes"></div><div class="plank"></div></div>
       <div class="shelfacts"><span class="sel-name" id="selName"></span>
-        <button class="ghost" id="loadBtn">Load</button><button class="ghost" id="shareBtn">Share</button><button class="ghost" id="delBtn">Delete</button>
+        <button class="ghost" id="loadBtn">Load</button><button class="ghost" id="shareBtn">Export .bstar</button><button class="ghost" id="delBtn">Delete</button><button class="ghost" id="importBtn">Import .bstar</button>
         <button class="ghost" id="backupBtn">Backup amp</button><button class="savebtn" id="saveLibBtn" style="height:38px">Save current</button></div>
+    </section>
+
+    <!-- ================= SONGS ================= -->
+    <section class="page" id="p-songs">
+      <div class="shelfhead"><h3>Song presets</h3><input class="search" id="songQ" placeholder="Search song or artist" autocomplete="off" spellcheck="false" aria-label="Search songs"><div class="genres" id="songGenres"></div></div>
+      <div class="shelf"><div class="tapes" id="songTapes"></div><div class="plank"></div></div>
+      <div class="shelfacts"><span class="sel-name" id="songSel"></span>
+        <button class="savebtn" id="songTry" style="height:38px">Play it</button><button class="ghost" id="songKeep">Copy to library</button><button class="ghost" id="songStore">Store to amp</button></div>
+      <p class="songnote">Starting points dialled in for the ID:Core V4's six voices. They change the sound live; your amp's volume knob stays where it is. Play it, then fine-tune and Store to amp to keep it in a patch. Architect patches (.bstar) can be imported from the Patches tab.</p>
     </section>
 
     <!-- ================= TUNER ================= -->
@@ -485,9 +490,12 @@ button { font-family: inherit; }
           <button class="tsw" data-g="17"><span class="bat"></span><span class="lbls">Engage</span></button>
           <span class="cap">Note · cents</span>
           <div class="vfdwin"><span class="vfdtxt" id="tTxt"></span></div>
+          <span class="cap" id="tHz"></span>
           <div class="lamps"><span><i class="lamp" id="lFlat"></i>FLAT</span><span><i class="lamp" id="lOk"></i>TUNE</span><span><i class="lamp" id="lSharp"></i>SHARP</span></div>
           <span class="cap">Strings</span>
           <div class="lamps" id="strings"></div>
+          <span class="cap">Reference</span>
+          <div class="svcbtns" style="display:flex;flex-direction:row;align-items:center;gap:12px"><button class="ghost" id="refDown" aria-label="Lower reference">−</button><span class="cap" id="refHz">A = 440 Hz</span><button class="ghost" id="refUp" aria-label="Raise reference">+</button></div>
         </div>
       </div>
     </section>
@@ -527,19 +535,9 @@ button { font-family: inherit; }
             <div id="rotFsA"></div><div id="rotFsB"></div>
           </div>
 
-          <div class="silkbox"><span class="lab">Routing</span><span class="sticker">Beta</span>
-            <div class="socketwrap"><div class="usbport"></div><span class="silk">USB</span></div>
-            <button class="tsw" data-g="16"><span class="bat"></span><span class="lbls">USB →<br>Emulated</span></button>
-            <button class="tsw" data-g="25"><span class="bat"></span><span class="lbls">USB →<br>Power amp</span></button>
-            <button class="tsw" data-g="15"><span class="bat"></span><span class="lbls">Line →<br>Emulated</span></button>
-            <button class="tsw" data-g="27"><span class="bat"></span><span class="lbls">Line →<br>Power amp</span></button>
-          </div>
-
           <div class="silkbox"><span class="lab">Output</span><span class="sticker">Beta</span>
             <button class="tsw" data-g="1"><span class="bat"></span><span class="lbls">Super wide<br>stereo</span></button>
-            <button class="tsw" data-g="47"><span class="bat"></span><span class="lbls">Noise<br>reduction</span></button>
-            <button class="tsw" data-g="41"><span class="bat"></span><span class="lbls">Speaker<br>mute</span></button>
-            <button class="tsw" data-g="14"><span class="bat"></span><span class="lbls">Effects<br>loop</span></button>
+            <p class="rearnote">USB audio routing, noise reduction and the effects loop are set in Architect on a computer.</p>
           </div>
 
           <div class="silkbox"><span class="lab">Memory</span>
@@ -583,11 +581,15 @@ const $ = id => document.getElementById(id);
 function send(o) { if (NATIVE) NATIVE.send(JSON.stringify(o)); else Mock.handle(o); }
 
 const VOICES = ["Clean Warm","Clean Bright","Crunch","Super Crunch","OD 1","OD 2"];
-const G = { SWS: 1, MANUAL: 3, TUNER: 17, CAB: 19, SPK: 20, MICPOS: 21, MIC: 22, ANGLE: 23, GATE: 26, FSMODE: 28, FSA: 29, FSB: 30 };
-let S = { connected: false, demo: false, link: "No amp", model: "", slot: 0, manual: false, names: ["","","","","",""], presetsRead: 0,
-          values: {}, globals: {}, tuner: { on: false, note: "", cents: 0 }, message: null };
-let LIB = [];
-const ui = { genre: "All", tape: null, writeOk: false, bpm: 0, gateLast: 64, consoleOpen: false };
+const G = { SWS: 1, TUNER: 17, CAB: 19, SPK: 20, MICPOS: 21, MIC: 22, ANGLE: 23, FSMODE: 28, FSA: 29, FSB: 30 };
+let S = { connected: false, demo: false, link: "No amp", model: "", version: "", ready: false, slot: 0, names: ["","","","","",""], presetsRead: 0,
+          values: {}, globals: {}, tunerOn: false, tuner: { on: false, note: "", cents: 0, hz: 0, source: "" }, message: null };
+let LIB = [], SONGS = [];
+const ui = { genre: "All", tape: null, writeOk: false, bpm: 0, gateLast: 40, consoleOpen: false, songGenre: "All", song: null, q: "", refHz: 440 };
+// Which parts of the screen need redrawing, batched to one redraw per frame.
+const dirty = new Set(); let renderQueued = false;
+function scheduleRender() { if (!renderQueued) { renderQueued = true; requestAnimationFrame(() => { renderQueued = false; const d = new Set(dirty); dirty.clear(); render(d); }); } }
+const renderAll = () => render(null);
 
 /* ================= helpers ================= */
 function vfd(el, text, dim) { el.textContent = String(text).toUpperCase().replace(/ /g, "!"); el.setAttribute("aria-label", text); el.classList.toggle("dim", !!dim); }
@@ -688,19 +690,21 @@ function toggle(btn, isOn, onFlip) { btn.classList.toggle("on", !!isOn); if (onF
 document.querySelectorAll("div[data-c][data-label]").forEach(host => { const c = host.dataset.c; KNOBS.push({ key: c, api: plateKnob(host, v => setC(c, v)) }); });
 
 const PEDALS = [   // signal order: guitar → gate → mod → echo → reverb → amp
-  { k: "gate", name: "Gate", sub: "Noise gate", w: 150, rot: -1.6, c: "linear-gradient(160deg,#2f4a3a,#16261d)", beta: true },
+  { k: "gate", name: "Gate", sub: "Noise gate", w: 170, rot: -1.6, c: "linear-gradient(160deg,#2f4a3a,#16261d)", gate: true },
   { k: "mod", fx: 1, name: "Modulate", sub: "Four voices", w: 210, rot: 1.1, c: "linear-gradient(160deg,#5b3b7a,#2c1a40)", on: "MOD_ON", type: "MOD_TYPE", types: ["Phaser","Ch/Flng","Env","Trem"] },
   { k: "dly", fx: 2, name: "Echo", sub: "Stereo delay", w: 236, rot: -.7, c: "linear-gradient(160deg,#e9dcbc,#bfae86)", ink: "#2a2014", on: "DELAY_ON", type: "DELAY_TYPE", types: ["Linear","Analog","Tape","Multi"] },
   { k: "rev", fx: 3, name: "Reverb", sub: "Super wide", w: 196, rot: 1.4, c: "linear-gradient(160deg,#7a1f1b,#3e0d0b)", on: "REVERB_ON", type: "REVERB_TYPE", types: ["Room","Hall","Spring","Plate"] },
 ];
-// Knob names follow the V4 manual's Effects Table; each maps to a real control.
+// Knobs as Architect shows them for the ID:Core V4 (Mix 0x15, Adjust 0x13, Speed 0x16, Depth 0x14; research/V4-PROTOCOL.md).
 const FXKNOBS = {
-  mod: t => [[["Mix","MOD_SEGVAL"],["Depth","MOD_LEVEL"],["Speed","MOD_SPEED"]], [["Morph","MOD_SEGVAL"],["Mix","MOD_LEVEL"],["Speed","MOD_SPEED"]],
-             [["Sens","MOD_SEGVAL"],["Depth","MOD_LEVEL"]], [["FM","MOD_SEGVAL"],["AM","MOD_LEVEL"],["Speed","MOD_SPEED"]]][t] || [],
-  dly: () => [["Feedback","DELAY_FEEDBACK"],["Level","DELAY_LEVEL"],["Time","DELAY_TIME"]],
-  rev: () => [["Size","REVERB_SIZE"],["Level","REVERB_LEVEL"]],
+  mod: t => [[["Mix","MOD_LEVEL"],["Shape","MOD_SEGVAL"],["Speed","MOD_SPEED"],["Depth","MOD_DEPTH"]],
+             [["Mix","MOD_LEVEL"],["Morph","MOD_SEGVAL"],["Speed","MOD_SPEED"],["Depth","MOD_DEPTH"]],
+             [["Mix","MOD_LEVEL"],["Sens","MOD_SEGVAL"],["Speed","MOD_SPEED"],["Depth","MOD_DEPTH"]],
+             [["Mix","MOD_LEVEL"],["FM","MOD_SEGVAL"],["Speed","MOD_SPEED"],["AM","MOD_DEPTH"]]][t] || [],
+  dly: () => [["Level","DELAY_LEVEL"],["F'back","DELAY_FEEDBACK"],["Time","DELAY_TIME"]],
+  rev: () => [["Level","REVERB_LEVEL"],["Size","REVERB_SIZE"]],
 };
-const RANGE = { MOD_SEGVAL: [0,31], DELAY_FEEDBACK: [0,31], REVERB_SIZE: [0,31], DELAY_TIME: [100,2000] };
+const RANGE = { MOD_SEGVAL: [0,31], DELAY_FEEDBACK: [0,31], REVERB_SIZE: [0,31], DELAY_TIME: [100,1000] };
 const pedalEls = {}; let pedalKnobs = [];
 function buildPedals() {
   const wrap = $("pedals"); wrap.innerHTML = ""; pedalKnobs = [];
@@ -709,21 +713,25 @@ function buildPedals() {
     el.style.setProperty("--pc", p.c); el.style.setProperty("--w", p.w + "px"); el.style.setProperty("--rot", p.rot + "deg"); if (p.ink) el.style.setProperty("--pc-ink", p.ink);
     el.innerHTML = `<span class="dc"></span><span class="jack in"></span><span class="jack out"></span><span class="pled"></span>
       <span class="pname">${p.name}</span><span class="psub">${p.sub}</span>
-      ${p.beta ? '<span class="sticker">Beta</span>' : `<div class="types">${p.types.map((x, i) => `<button data-i="${i}">${x}</button>`).join("")}</div>`}
+      ${p.gate ? '' : `<div class="types">${p.types.map((x, i) => `<button data-i="${i}">${x}</button>`).join("")}</div>`}
       <div class="pknobs"></div><span class="focusnote">● FOCUS</span><button class="foot" aria-label="${p.name} footswitch"></button>`;
     el.querySelectorAll(".types button").forEach(b => b.onclick = () => { haptic(); setC(p.type, +b.dataset.i); renderPedal(p); });
-    el.querySelector(".foot").onclick = () => { haptic(); if (p.k === "gate") { const g = gv(G.GATE); if (g > 0) ui.gateLast = g; setG(G.GATE, g > 0 ? 0 : (ui.gateLast || 64)); renderAll(); } else send({ a: "stomp", fx: p.fx }); };
+    el.querySelector(".foot").onclick = () => { haptic();
+      if (p.k === "gate") { const g = val("GATE_AMOUNT"); if (g > 0) ui.gateLast = g; setC("GATE_AMOUNT", g > 0 ? 0 : (ui.gateLast || 40)); renderAll(); }
+      else send({ a: "stomp", fx: p.fx }); };
     pedalEls[p.k] = el; wrap.appendChild(el); el._type = -1;
   });
 }
 function renderPedal(p) {
   const el = pedalEls[p.k];
   if (p.k === "gate") {
-    const g = gv(G.GATE);
-    el.querySelector(".pled").className = "pled" + (g > 0 ? " r" : "");
-    if (el._type !== 0) { el._type = 0; const kr = el.querySelector(".pknobs"); kr.innerHTML = ""; const d = document.createElement("div"); kr.appendChild(d);
-      el._gate = pedalKnob(d, "Amount", 0, 127, v => setG(G.GATE, v)); }
-    el._gate.set(g); return;
+    // The V4 keeps the gate in each patch: Amount 0 means off.
+    const g = val("GATE_AMOUNT");
+    el.querySelector(".pled").className = "pled" + (g > 0 ? " g" : "");
+    if (el._type !== 0) { el._type = 0; const kr = el.querySelector(".pknobs"); kr.innerHTML = "";
+      const a = document.createElement("div"), b = document.createElement("div"); kr.append(a, b);
+      el._gate = pedalKnob(a, "Amount", 0, 127, v => setC("GATE_AMOUNT", v)); el._sens = pedalKnob(b, "Sens", 0, 127, v => setC("GATE_SENS", v)); }
+    el._gate.set(g); el._sens.set(val("GATE_SENS")); return;
   }
   const on = val(p.on) === 1, foc = on && val("FX_FOCUS") === p.fx, t = val(p.type);
   el.classList.toggle("focused", foc);
@@ -743,16 +751,28 @@ function drawCables() {
   const br = board.getBoundingClientRect();
   const pt = el => { const r = el.getBoundingClientRect(); return [r.left + r.width / 2 - br.left, r.top + r.height / 2 - br.top]; };
   const peds = PEDALS.map(p => pedalEls[p.k]);
-  const cable = (a, b, sag) => { const [x1, y1] = a, [x2, y2] = b, dx = Math.min(70, Math.abs(x2 - x1) * .4 + 18), s1 = x2 < x1 ? -1 : 1;
-    const d = `M${x1.toFixed(1)} ${y1.toFixed(1)} C${(x1 + s1 * dx).toFixed(1)} ${(y1 + sag).toFixed(1)}, ${(x2 - s1 * dx).toFixed(1)} ${(y2 + sag).toFixed(1)}, ${x2.toFixed(1)} ${y2.toFixed(1)}`;
-    return `<path d="${d}" stroke="#050505" stroke-width="9" fill="none" stroke-linecap="round"/><path d="${d}" stroke="#2c2c2c" stroke-width="5.5" fill="none" stroke-linecap="round"/>
-      <path d="${d}" stroke="rgba(255,255,255,.14)" stroke-width="1.4" fill="none" stroke-linecap="round" transform="translate(0,-1.6)"/>`; };
+  const f = n => n.toFixed(1);
+  const wire = d => `<path d="${d}" stroke="#050505" stroke-width="9" fill="none" stroke-linecap="round"/><path d="${d}" stroke="#2c2c2c" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+      <path d="${d}" stroke="rgba(255,255,255,.14)" stroke-width="1.4" fill="none" stroke-linecap="round" transform="translate(0,-1.6)"/>`;
+  const cable = (a, b, sag) => { const [x1, y1] = a, [x2, y2] = b, span = Math.abs(x2 - x1), dx = Math.min(70, span * .3), s1 = x2 < x1 ? -1 : 1;
+    sag = Math.min(sag, span * .3);   // short hops between neighbours droop a little instead of kinking into a V
+    return wire(`M${f(x1)} ${f(y1)} C${f(x1 + s1 * dx)} ${f(y1 + sag)}, ${f(x2 - s1 * dx)} ${f(y2 + sag)}, ${f(x2)} ${f(y2)}`); };
+  // next pedal sits on the row below: leave the out jack, drop into the gap between the rows, run across, and come up into the in jack
+  const rowCable = (a, b, ym) => { const [x1, y1] = a, [x2, y2] = b, r = 34;
+    return wire(`M${f(x1)} ${f(y1)} C${f(x1 - r)} ${f(y1)}, ${f(x1 - r)} ${f(ym)}, ${f(x1)} ${f(ym)} L${f(x2)} ${f(ym)} C${f(x2 + r)} ${f(ym)}, ${f(x2 + r)} ${f(y2)}, ${f(x2)} ${f(y2)}`); };
+  const socket = (x, y, left) => `<rect x="${f(left ? x : x - 12)}" y="${f(y - 9)}" width="12" height="18" rx="2" fill="#6c6d70"/><rect x="${f(left ? x : x - 12)}" y="${f(y - 5)}" width="12" height="10" fill="#1a1a1a"/>`;
   const W = br.width; let out = "";
+  const box = el => el.getBoundingClientRect();
+  // guitar in from the board's right edge, amp out at its left edge: both stay inside the board
   const first = pt(peds[0].querySelector(".jack.in"));
-  out += cable([W + 40, first[1] + 20], [first[0] + 6, first[1]], 26);
-  for (let i = 0; i < peds.length - 1; i++) { const a = pt(peds[i].querySelector(".jack.out")), b = pt(peds[i + 1].querySelector(".jack.in")); out += cable([a[0] - 6, a[1]], [b[0] + 6, b[1]], 40); }
+  out += cable([W - 12, first[1] + 24], [first[0] + 6, first[1]], 18) + socket(W, first[1] + 24, false);
+  for (let i = 0; i < peds.length - 1; i++) {
+    const a = pt(peds[i].querySelector(".jack.out")), b = pt(peds[i + 1].querySelector(".jack.in"));
+    if (b[1] - a[1] > 80) { const ym = (box(peds[i]).bottom + box(peds[i + 1]).top) / 2 - br.top; out += rowCable([a[0] - 6, a[1]], [b[0] + 6, b[1]], ym); }
+    else out += cable([a[0] - 6, a[1]], [b[0] + 6, b[1]], 40);
+  }
   const last = pt(peds.at(-1).querySelector(".jack.out"));
-  out += cable([last[0] - 6, last[1]], [-40, last[1] - 50], 24);
+  out += cable([last[0] - 6, last[1]], [12, last[1] + 24], 18) + socket(0, last[1] + 24, true);
   svg.setAttribute("viewBox", `0 0 ${W} ${br.height}`); svg.innerHTML = out;
 }
 buildPedals();
@@ -769,7 +789,12 @@ bindRot($("rotFsA"), { labels: ["1","2","3","4","5","6"], cap: "Patch A", full: 
 bindRot($("rotFsB"), { labels: ["1","2","3","4","5","6"], cap: "Patch B", full: VOICES, size: 130, fs: 22, light: true }, () => Math.max(0, gv(G.FSB, 2) - 1), i => setG(G.FSB, i + 1));
 
 /* toggles bound to globals */
-document.querySelectorAll(".tsw[data-g]").forEach(b => { const id = +b.dataset.g; b.onclick = () => { haptic(); setG(id, b.classList.contains("on") ? 0 : 1); renderAll(); }; });
+document.querySelectorAll(".tsw[data-g]").forEach(b => { const id = +b.dataset.g; b.onclick = () => { haptic();
+  if (id === G.TUNER) { const on = !S.tunerOn; S.tunerOn = on; send({ a: "tuner", on }); }
+  else setG(id, b.classList.contains("on") ? 0 : 1);
+  renderAll(); }; });
+function setRef(hz) { ui.refHz = Math.min(446, Math.max(432, hz)); $("refHz").textContent = `A = ${ui.refHz} Hz`; send({ a: "tunerRef", hz: ui.refHz }); }
+$("refDown").onclick = () => setRef(ui.refHz - 1); $("refUp").onclick = () => setRef(ui.refHz + 1);
 $("wr").onclick = () => { haptic(); ui.writeOk = !ui.writeOk; renderAll(); };
 
 /* tap tempo: sets the delay time from the taps */
@@ -779,21 +804,28 @@ function tapTempo() {
   const tl = $("tap"); tl.classList.add("on"); setTimeout(() => tl.classList.remove("on"), 110);
   if (taps.length < 2) return;
   const ms = Math.round((taps.at(-1) - taps[0]) / (taps.length - 1));
-  ui.bpm = Math.round(60000 / ms); setC("DELAY_TIME", Math.min(2000, Math.max(100, ms))); renderAll();
+  ui.bpm = Math.round(60000 / ms); setC("DELAY_TIME", Math.min(1000, Math.max(100, ms))); renderAll();
 }
 $("tap").onclick = tapTempo;
 
 /* top bar + patch navigation */
-const step = d => { if (!S.connected) return openConnect(); const s = S.slot || 1; send({ a: "patch", slot: ((s - 1 + d + 6) % 6) + 1 }); };
-$("prev").onclick = () => step(-1); $("next").onclick = () => step(1); $("vprev").onclick = () => step(-1); $("vnext").onclick = () => step(1);
+ 
+/* voice lamps: the amp keeps one patch per voice, so picking a voice selects its patch (manual mode changes the voice live) */
+$("voices").innerHTML = VOICES.map((n, i) => `<button data-v="${i}" role="radio">${n}</button>`).join("");
+$("voices").onclick = e => {
+  const b = e.target.closest("button"); if (!b) return; if (!S.connected) return openConnect();
+  const v = +b.dataset.v; haptic();
+  if (S.slot) send({ a: "patch", slot: v + 1 }); else { setC("VOICE", v); dirty.add("values"); scheduleRender(); }
+};
 $("status").onclick = () => openConnect();
 $("save").onclick = () => askName("Save to library", "Name this sound. It is kept on this tablet.", S.names[S.slot - 1] || "", true, (name, genre) => send({ a: "libSave", name, genre }));
 $("refreshBtn").onclick = () => send({ a: "refresh" });
 $("storeBtn").onclick = () => {
-  if (!ui.writeOk) return showMsg("Memory is write-protected. Flip the switch in Settings first.");
-  if (!S.slot) return showMsg("Pick a patch first.");
-  askName(`Store in patch ${S.slot}`, `Overwrites patch ${S.slot} (${VOICES[S.slot - 1]}) on the amp with the sound you hear now.`, S.names[S.slot - 1] || "", false,
-    name => send({ a: "store", slot: S.slot, name, unlocked: true }));
+  if (!S.connected) return openConnect();
+  if (!ui.writeOk) return showMsg("Saving to the amp is locked. Flip Write Protect in Settings first.");
+  const slot = val("VOICE") + 1;   // the amp keeps one patch per voice: a sound is stored in its voice's slot
+  askName(`Store in patch ${slot}`, `Overwrites patch ${slot} (${VOICES[slot - 1]}) on the amp with the sound you hear now.`, S.names[slot - 1] || "", false,
+    name => send({ a: "store", slot, name, unlocked: true }));
 };
 $("svcConnect").onclick = () => send({ a: "connect" }); $("svcDemo").onclick = () => send({ a: "demo" }); $("svcRefresh").onclick = () => send({ a: "refresh" });
 
@@ -805,23 +837,52 @@ $("loadBtn").onclick = () => { const e = LIB.find(x => x.id === ui.tape); if (!e
 $("shareBtn").onclick = () => ui.tape && send({ a: "libShare", id: ui.tape });
 $("delBtn").onclick = () => { const e = LIB.find(x => x.id === ui.tape); if (e) confirmBox("Delete", `Delete "${e.name}" from this tablet?`, () => send({ a: "libDelete", id: e.id })); };
 $("backupBtn").onclick = () => send({ a: "backup" });
+$("importBtn").onclick = () => send({ a: "import" });
 $("saveLibBtn").onclick = () => $("save").click();
 function renderLib() {
-  const gs = ["All","Rock","Metal","Blues","Clean","Pop","Other","Backup"];
+  const gs = ["All", ...GENRES, "Backup"];
   $("genres").innerHTML = gs.map(x => `<button class="${x === ui.genre ? "on" : ""}">${x}</button>`).join("");
   document.querySelectorAll("#genres button").forEach(c => c.onclick = () => { ui.genre = c.textContent; renderLib(); });
   const list = LIB.filter(l => ui.genre === "All" || l.genre === ui.genre);
   if (!list.some(l => l.id === ui.tape)) ui.tape = list[0]?.id ?? null;
-  const stripes = { Rock: "#c0392b", Metal: "#2c3e50", Blues: "#2e5aa8", Clean: "#1abc9c", Pop: "#d35486", Backup: "#7f8c8d" };
+  const stripes = STRIPES;
   $("tapes").innerHTML = list.length ? list.map(l => `<button class="cass${l.id === ui.tape ? " sel" : ""}" data-id="${l.id}" style="--stripe:${stripes[l.genre] || "#b48a35"}" aria-label="${esc(l.name)}">
-      <span class="lbl"><b>${esc(l.name)}</b><i>${esc(l.genre)} · ${esc(l.kind === "backup" ? "6 patches" : (l.voice || ""))}</i></span><span class="win"></span><span class="holes"></span></button>`).join("")
+      <span class="lbl"><b>${esc(l.name)}</b><i>${esc(l.artist || l.genre)} · ${esc(l.kind === "backup" ? "6 patches" : (l.voice || ""))}</i></span><span class="win"></span><span class="holes"></span></button>`).join("")
     : `<div class="empty">No saved sounds yet. Dial in a tone and tap Save current, or Backup amp to keep all 6 patches.</div>`;
   document.querySelectorAll("#tapes .cass").forEach(c => c.onclick = () => { ui.tape = +c.dataset.id; renderLib(); });
   const sel = LIB.find(x => x.id === ui.tape);
   $("selName").textContent = sel ? sel.name : "";
   $("loadBtn").textContent = sel && sel.kind === "backup" ? "Restore" : "Load";
   ["loadBtn","shareBtn","delBtn"].forEach(id => $(id).disabled = !sel);
+  $("shareBtn").disabled = !sel || sel.kind === "backup";
 }
+const GENRES = ["Rock","Metal","Blues","Clean","Pop","Punk","Surf","Other"];
+const STRIPES = { Community: "#d4a017", Rock: "#c0392b", Metal: "#2c3e50", Blues: "#2e5aa8", Clean: "#1abc9c", Pop: "#d35486", Punk: "#e67e22", Surf: "#2aa1b3", Backup: "#7f8c8d" };
+
+/* song presets (assets/presets/songs.json, read-only) */
+function renderSongs() {
+  const gs = ["All", ...["Community", ...GENRES].filter(g => SONGS.some(x => x.genre === g))];
+  $("songGenres").innerHTML = gs.map(x => `<button class="${x === ui.songGenre ? "on" : ""}">${x}</button>`).join("");
+  document.querySelectorAll("#songGenres button").forEach(c => c.onclick = () => { ui.songGenre = c.textContent; renderSongs(); });
+  const q = ui.q.trim().toLowerCase();
+  const list = SONGS.filter(x => (ui.songGenre === "All" || x.genre === ui.songGenre) && (!q || (x.name + " " + x.artist).toLowerCase().includes(q)));
+  if (!list.some(x => x.id === ui.song)) ui.song = list[0]?.id ?? null;
+  $("songTapes").innerHTML = list.length ? list.map(x => `<button class="cass${x.id === ui.song ? " sel" : ""}" data-id="${esc(x.id)}" style="--stripe:${STRIPES[x.genre] || "#b48a35"}" aria-label="${esc(x.name)} by ${esc(x.artist)}">
+      <span class="lbl"><b>${esc(x.name)}</b><i>${esc(x.artist)} · ${esc(VOICES[x.values.VOICE] || "")}</i></span><span class="win"></span><span class="holes"></span></button>`).join("")
+    : `<div class="empty">${SONGS.length ? "No song matches that search." : "Song presets load with the app."}</div>`;
+  document.querySelectorAll("#songTapes .cass").forEach(c => c.onclick = () => { ui.song = c.dataset.id; renderSongs(); });
+  const sel = SONGS.find(x => x.id === ui.song);
+  $("songSel").textContent = sel ? `${sel.name} · ${sel.artist}` : "";
+  ["songTry","songKeep","songStore"].forEach(id => $(id).disabled = !sel);
+}
+$("songQ").oninput = e => { ui.q = e.target.value; renderSongs(); };
+$("songTry").onclick = () => { if (!ui.song) return; if (!S.connected) return openConnect(); haptic(); send({ a: "songLoad", id: ui.song }); };
+$("songKeep").onclick = () => ui.song && send({ a: "songSave", id: ui.song });
+$("songStore").onclick = () => { if (!ui.song) return; const x = SONGS.find(s => s.id === ui.song);
+  if (!ui.writeOk) return showMsg("Saving to the amp is locked. Flip Write Protect in Settings first.");
+  const slot = (x.values.VOICE ?? 0) + 1;   // each patch slot belongs to one voice
+  confirmBox(`Store in patch ${slot}`, `Plays "${x.name}" and saves it over patch ${slot} (${VOICES[slot - 1]}) on the amp.`, () => {
+    send({ a: "songLoad", id: x.id }); send({ a: "store", slot, name: x.name, unlocked: true }); }); };
 const esc = s => String(s).replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
 
 /* tuner scale */
@@ -838,63 +899,94 @@ const esc = s => String(s).replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;"
 const STR = ["E","A","D","G","B","E"];
 $("strings").innerHTML = STR.map(s => `<span><i class="lamp dimgreen"></i>${s}</span>`).join("");
 let needle = 0;
-function animateNeedle() { const target = S.tuner.on ? Math.max(-50, Math.min(50, S.tuner.cents)) : -50;
+function animateNeedle() { const target = (S.tunerOn || S.tuner.on) && S.tuner.note ? Math.max(-50, Math.min(50, S.tuner.cents)) : (S.tunerOn ? 0 : -50);
   needle += (target - needle) * .25; $("needle").setAttribute("transform", `rotate(${(needle * .9).toFixed(2)} 300 300)`); requestAnimationFrame(animateNeedle); }
 requestAnimationFrame(animateNeedle);
 
-/* ================= render from amp state ================= */
-function renderAll() {
-  const conn = S.connected, slot = S.slot, voice = val("VOICE"), name = slot ? (S.names[slot - 1] || `Patch ${slot}`) : "";
-  // status
-  $("status").className = "status " + (conn ? (S.demo ? "demo" : "ok") : "none");
-  $("statusTxt").textContent = conn ? (S.demo ? "Demo amp" : S.model) : "No amp";
-  $("jewel").classList.toggle("on", conn);
-  // displays
-  const top = !conn ? "No amp" : S.manual ? "Manual" : slot ? `${slot} ${name}` : "---";
-  vfd($("pTxt"), top, !conn); $("pSub").textContent = conn ? VOICES[voice] || "" : "tap the lamp to connect";
-  vfd($("vTxt"), conn ? VOICES[voice] || "" : "--", !conn);
-  vfd($("chTxt"), conn ? (slot ? `${slot} ${name}` : S.manual ? "Manual" : "---") : "No amp", !conn); $("chVoice").textContent = conn ? VOICES[voice] || "" : "";
-  vfd($("sTxt"), top, !conn); $("sVoice").textContent = conn ? VOICES[voice] || "" : "";
-  const live = [["MOD_ON","Mod"],["DELAY_ON","Echo"],["REVERB_ON","Reverb"]].filter(([c]) => val(c) === 1).map(([, n]) => n);
-  if (gv(G.GATE) > 0) live.push("Gate");
-  $("sFx").textContent = live.length ? live.join(" · ") : "Dry";
-  $("bpm").textContent = ui.bpm ? ui.bpm + " BPM" : "—";
-  // knobs and pedals
-  KNOBS.forEach(k => k.api.set(val(k.key)));
-  PEDALS.forEach(renderPedal);
-  ROT.forEach(f => f());
-  document.querySelectorAll(".tsw[data-g]").forEach(b => b.classList.toggle("on", gv(+b.dataset.g) > 0));
-  $("wr").classList.toggle("on", ui.writeOk); $("wr").querySelector(".lbls").innerHTML = ui.writeOk ? "Write<br>Allowed" : "Write<br>Protect";
-  // presets on the channel plate
-  $("presets").innerHTML = S.names.map((n, i) => `<button class="preset" data-i="${i}" aria-label="Patch ${i + 1}, ${esc(n)}"><span class="lamp${i + 1 === slot ? " red" : ""}"></span>
-      <span class="n">${["I","II","III","IV","V","VI"][i]}</span><span class="t">${esc(n || VOICES[i])}</span></button>`).join("");
+const ROMAN = ["I","II","III","IV","V","VI"];
+/* Patch buttons (channel plate + stage) are built once; renders only change their classes and text. */
+function buildSwitches() {
+  $("presets").innerHTML = ROMAN.map((r, i) => `<button class="preset" data-i="${i}"><span class="lamp"></span><span class="n">${r}</span><span class="t"></span></button>`).join("");
   document.querySelectorAll("#presets .preset").forEach(b => b.onclick = () => { haptic(); send({ a: "patch", slot: +b.dataset.i + 1 }); });
-  // cabrig summary
-  vfd($("cTxt"), `Cab ${gv(G.CAB) + 1} Spk ${gv(G.SPK) + 1} Mic ${["Dyn","Con","Rib"][gv(G.MIC)] || "-"}`, !conn);
-  // tuner
-  const tn = S.tuner;
-  $("tNote").textContent = tn.on && tn.note ? tn.note : "–";
-  $("tState").textContent = !tn.on ? "tuner off" : tn.cents > 4 ? "a touch sharp" : tn.cents < -4 ? "a touch flat" : "in tune";
-  vfd($("tTxt"), tn.on && tn.note ? `${tn.note} ${tn.cents >= 0 ? "+" : "-"}${String(Math.abs(tn.cents)).padStart(2, "0")}` : "-- --", !tn.on);
-  $("lFlat").className = "lamp" + (tn.on && tn.cents < -4 ? " red" : ""); $("lOk").className = "lamp" + (tn.on && Math.abs(tn.cents) <= 4 && tn.note ? " green" : ""); $("lSharp").className = "lamp" + (tn.on && tn.cents > 4 ? " red" : "");
-  document.querySelectorAll("#strings .lamp").forEach((l, i) => l.className = "lamp " + (tn.on && STR[i] === tn.note ? "green" : "dimgreen"));
-  // stage switches
-  $("psw").innerHTML = S.names.map((n, i) => `<button class="fs${i + 1 === slot ? " on" : ""}" data-i="${i}" aria-label="Patch ${i + 1}">
-      <span class="lamp${i + 1 === slot ? " red" : ""}"></span><span class="tag">${esc(n || VOICES[i])}</span><span class="sw"></span><span class="num">${["I","II","III","IV","V","VI"][i]}</span></button>`).join("");
+  $("psw").innerHTML = ROMAN.map((r, i) => `<button class="fs" data-i="${i}" aria-label="Patch ${i + 1}"><span class="lamp"></span><span class="tag"></span><span class="sw"></span><span class="num">${r}</span></button>`).join("");
   document.querySelectorAll("#psw .fs").forEach(f => f.onclick = () => { haptic(); send({ a: "patch", slot: +f.dataset.i + 1 }); });
   const fx = [["MOD_ON","Mod",1],["DELAY_ON","Echo",2],["REVERB_ON","Reverb",3]];
-  $("fsw").innerHTML = fx.map(([c, n, f]) => `<button class="fs${val(c) === 1 ? " fxon" : ""}" data-c="${c}" data-f="${f}"><span class="lamp${val(c) === 1 ? " green" : ""}"></span><span class="eng">${n}</span><span class="sw"></span><span class="num">${val(c) === 1 ? "On" : "Off"}</span></button>`).join("")
-    + `<button class="fs${gv(G.GATE) > 0 ? " fxon" : ""}" id="stGate"><span class="lamp${gv(G.GATE) > 0 ? " green" : ""}"></span><span class="eng">Gate</span><span class="sw"></span><span class="num">${gv(G.GATE) > 0 ? "On" : "Off"}</span></button>`
+  $("fsw").innerHTML = fx.map(([c, n, f]) => `<button class="fs" data-c="${c}" data-f="${f}"><span class="lamp"></span><span class="eng">${n}</span><span class="sw"></span><span class="num"></span></button>`).join("")
+    + `<button class="fs" id="stGate"><span class="lamp"></span><span class="eng">Gate</span><span class="sw"></span><span class="num"></span></button>`
     + `<button class="fs" id="stTap"><span class="lamp" id="stTapLamp"></span><span class="vfdwin bpmwin"><span class="vfdtxt" id="stBpm"></span></span><span class="sw"></span><span class="num">Tap</span></button>`;
-  vfd($("stBpm"), ui.bpm ? `${ui.bpm} BPM` : "--- BPM");
-  document.querySelectorAll("#fsw .fs[data-c]").forEach(f => f.onclick = () => { haptic(); const c = f.dataset.c, on = val(c) === 1; setC(c, on ? 0 : 1); if (!on) setC("FX_FOCUS", +f.dataset.f); renderAll(); });
+  document.querySelectorAll("#fsw .fs[data-c]").forEach(f => f.onclick = () => { haptic(); send({ a: "stomp", fx: +f.dataset.f }); });
   $("stGate").onclick = () => pedalEls.gate.querySelector(".foot").click();
   $("stTap").onclick = () => { tapTempo(); const l = $("stTapLamp"); l.className = "lamp green"; setTimeout(() => l.className = "lamp", 120); };
-  // rear panel
-  $("mModel").textContent = conn ? (S.demo ? "DEMO AMP" : S.model.toUpperCase()) : "NO AMP CONNECTED";
-  $("mLink").textContent = conn ? S.link : "Plug the amp in with a USB-C OTG cable";
-  // message
-  showMsg(S.message, true);
+}
+buildSwitches();
+const has = (d, ...k) => !d || k.some(x => d.has(x));
+
+/* ================= render from amp state ================= */
+function render(d) {
+  const conn = S.connected, slot = S.slot, voice = val("VOICE"), name = slot ? (S.names[slot - 1] || `Patch ${slot}`) : "";
+  if (has(d, "connected", "demo", "model", "link", "slot", "names", "values", "ready", "version")) {
+    $("status").className = "status " + (conn ? (S.demo ? "demo" : "ok") : "none");
+    $("statusTxt").textContent = conn ? (S.demo ? "Demo amp" : S.ready ? S.model : "Connecting…") : (S.link === "Reconnecting…" ? "Reconnecting…" : "No amp");
+    $("jewel").classList.toggle("on", conn);
+    const top = !conn ? "No amp" : slot ? `${slot} ${name}` : "Manual";
+    $("voices").classList.toggle("off", !conn);
+    $("voices").querySelectorAll("button").forEach(b => { const on = conn && +b.dataset.v === voice; b.classList.toggle("on", on); b.setAttribute("aria-checked", on); });
+    vfd($("chTxt"), conn ? (slot ? `${slot} ${name}` : "Manual") : "No amp", !conn); $("chVoice").textContent = conn ? VOICES[voice] || "" : "";
+    vfd($("sTxt"), top, !conn); $("sVoice").textContent = conn ? VOICES[voice] || "" : "";
+    $("mModel").textContent = conn ? (S.demo ? "DEMO AMP" : S.model.toUpperCase()) : "NO AMP CONNECTED";
+    $("mLink").textContent = conn ? S.link + (S.version ? ` · firmware ${S.version}` : "") : "Plug the amp in with a USB-C OTG cable";
+  }
+  if (has(d, "slot", "names")) {
+    document.querySelectorAll("#presets .preset").forEach((b, i) => {
+      b.querySelector(".lamp").className = "lamp" + (i + 1 === slot ? " red" : "");
+      b.querySelector(".t").textContent = S.names[i] || VOICES[i];
+      b.setAttribute("aria-label", `Patch ${i + 1}, ${S.names[i] || VOICES[i]}`);
+    });
+    document.querySelectorAll("#psw .fs").forEach((b, i) => {
+      b.classList.toggle("on", i + 1 === slot);
+      b.querySelector(".lamp").className = "lamp" + (i + 1 === slot ? " red" : "");
+      b.querySelector(".tag").textContent = S.names[i] || VOICES[i];
+    });
+    ROT[0] && ROT[0]();   // channel rotary follows the patch
+  }
+  if (has(d, "values")) {
+    const live = [["MOD_ON","Mod"],["DELAY_ON","Echo"],["REVERB_ON","Reverb"]].filter(([c]) => val(c) === 1).map(([, n]) => n);
+    if (val("GATE_AMOUNT") > 0) live.push("Gate");
+    $("sFx").textContent = live.length ? live.join(" · ") : "Dry";
+    KNOBS.forEach(k => k.api.set(val(k.key)));
+    PEDALS.forEach(renderPedal);
+    document.querySelectorAll("#fsw .fs[data-c]").forEach(f => { const on = val(f.dataset.c) === 1;
+      f.classList.toggle("fxon", on); f.querySelector(".lamp").className = "lamp" + (on ? " green" : ""); f.querySelector(".num").textContent = on ? "On" : "Off"; });
+    const gOn = val("GATE_AMOUNT") > 0, sg = $("stGate");
+    sg.classList.toggle("fxon", gOn); sg.querySelector(".lamp").className = "lamp" + (gOn ? " green" : ""); sg.querySelector(".num").textContent = gOn ? "On" : "Off";
+  }
+  if (has(d, "globals", "tunerOn")) {
+    ROT.slice(1).forEach(f => f());
+    document.querySelectorAll(".tsw[data-g]").forEach(b => b.classList.toggle("on", +b.dataset.g === G.TUNER ? S.tunerOn : gv(+b.dataset.g) > 0));
+    vfd($("cTxt"), `Cab ${gv(G.CAB) + 1} Spk ${gv(G.SPK) + 1} Mic ${["Dyn","Con","Rib"][gv(G.MIC)] || "-"}`, !conn);
+  }
+  if (has(d, "tuner", "tunerOn")) renderTuner();
+  $("bpm").textContent = ui.bpm ? ui.bpm + " BPM" : "—";
+  vfd($("stBpm"), ui.bpm ? `${ui.bpm} BPM` : "--- BPM");
+  $("wr").classList.toggle("on", ui.writeOk); $("wr").querySelector(".lbls").innerHTML = ui.writeOk ? "Write<br>Allowed" : "Write<br>Protect";
+  if (has(d, "message")) showMsg(S.message, true);
+}
+
+function renderTuner() {
+  const tn = S.tuner, on = S.tunerOn || tn.on, sig = on && !!tn.note;
+  $("tNote").textContent = sig ? tn.note : "–";
+  $("tState").textContent = !on ? "tuner off" : !sig ? "amp muted · play a string" : tn.cents > 4 ? "a touch sharp" : tn.cents < -4 ? "a touch flat" : "in tune";
+  vfd($("tTxt"), sig ? `${tn.note} ${tn.cents >= 0 ? "+" : "-"}${String(Math.abs(tn.cents)).padStart(2, "0")}` : "-- --", !on);
+  $("tHz").textContent = sig && tn.hz ? `${tn.hz.toFixed(1)} Hz` : on ? (tn.source === "audio" ? "listening…" : "amp tuner") : "";
+  $("lFlat").className = "lamp" + (sig && tn.cents < -4 ? " red" : ""); $("lOk").className = "lamp" + (sig && Math.abs(tn.cents) <= 4 ? " green" : ""); $("lSharp").className = "lamp" + (sig && tn.cents > 4 ? " red" : "");
+  const near = sig ? nearestString(tn) : -1;
+  document.querySelectorAll("#strings .lamp").forEach((l, i) => l.className = "lamp " + (i === near ? "green" : "dimgreen"));
+}
+/* Which open string (standard tuning) the note belongs to; uses the frequency when the phone measured it. */
+const STR_HZ = [82.41, 110, 146.83, 196, 246.94, 329.63];
+function nearestString(tn) {
+  if (tn.hz) { let best = 0, bd = 1e9; STR_HZ.forEach((f, i) => { const dd = Math.abs(Math.log2(tn.hz / (f * ui.refHz / 440))); if (dd < bd) { bd = dd; best = i; } }); return bd < 0.25 ? best : -1; }
+  const i = STR.indexOf(tn.note); return i;
 }
 
 /* ================= overlays ================= */
@@ -912,7 +1004,7 @@ function sheet(title, text, input, genres, buttons) {
   $("shTitle").textContent = title; $("shText").textContent = text;
   const inp = $("shInput"); inp.style.display = input === null ? "none" : ""; inp.value = input ?? "";
   let genre = "Rock"; const gen = $("shGen");
-  gen.innerHTML = genres ? ["Rock","Metal","Blues","Clean","Pop","Other"].map(g => `<button class="${g === genre ? "on" : ""}">${g}</button>`).join("") : "";
+  gen.innerHTML = genres ? GENRES.map(g => `<button class="${g === genre ? "on" : ""}">${g}</button>`).join("") : "";
   gen.querySelectorAll("button").forEach(b => b.onclick = () => { genre = b.textContent; gen.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); });
   $("shBtns").innerHTML = buttons.map((b, i) => `<button class="${b.primary ? "savebtn" : "platebtn"}" data-i="${i}">${b.label}</button>`).join("");
   $("shBtns").querySelectorAll("button").forEach(b => b.onclick = () => { const f = buttons[+b.dataset.i].go; $("veil").classList.remove("on"); f && f(inp.value.trim(), genre); });
@@ -941,6 +1033,8 @@ document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => {
   document.querySelectorAll("#tabs button").forEach(x => x.classList.toggle("on", x === b));
   document.querySelectorAll(".page").forEach(p => p.classList.toggle("on", p.id === "p-" + b.dataset.p));
   if (b.dataset.p === "amp") requestAnimationFrame(drawCables);
+  const wantTuner = b.dataset.p === "tuner";
+  if (S.connected && wantTuner !== S.tunerOn && (wantTuner || ui.tunerFromTab)) { ui.tunerFromTab = wantTuner; S.tunerOn = wantTuner; send({ a: "tuner", on: wantTuner }); renderAll(); }
 });
 function layout() { document.body.classList.toggle("phone", window.innerWidth < 700); requestAnimationFrame(drawCables); }
 window.addEventListener("resize", layout); layout();
@@ -948,7 +1042,10 @@ document.fonts && document.fonts.ready.then(() => requestAnimationFrame(drawCabl
 
 /* ================= entry points for the app ================= */
 window.PT = {
-  onState(s) { S = s; S.names = (s.names || []).map(String); renderAll(); },
+  // Native sends only the fields that changed; merge them and redraw just those parts on the next frame.
+  onState(d) { if (d.names) d.names = d.names.map(String); Object.assign(S, d); Object.keys(d).forEach(k => dirty.add(k)); scheduleRender(); },
+  onTuner(t) { S.tuner = t; dirty.add("tuner"); scheduleRender(); },
+  onSongs(list) { SONGS = list || []; renderSongs(); },
   onLibrary(list) { LIB = list; renderLib(); },
   onLog(text) { const pre = $("cLog"); const atEnd = pre.scrollTop + pre.clientHeight >= pre.scrollHeight - 20; pre.textContent = text || "(no packets yet)"; if (atEnd) pre.scrollTop = pre.scrollHeight; },
 };
@@ -956,12 +1053,15 @@ window.PT = {
 /* ================= browser preview (no app): a tiny stand-in amp ================= */
 const Mock = {
   handle(o) {
-    if (o.a === "demo" || o.a === "connect") Object.assign(S, { connected: true, demo: true, link: "Demo amp (browser preview)", model: "ID:Core V4", slot: 3, names: ["CLEAN ONE","CLEAN ARP","CRUNCH 80S","SUPER CRUNCH","LEAD","HIGH GAIN"],
-      values: { VOICE: 2, GAIN: 70, VOLUME: 50, BASS: 72, MIDDLE: 58, TREBLE: 80, ISF: 64, RESONANCE: 50, PRESENCE: 76, DELAY_ON: 1, REVERB_ON: 1, FX_FOCUS: 3, DELAY_TYPE: 1, DELAY_FEEDBACK: 10, DELAY_LEVEL: 40, DELAY_TIME: 400, REVERB_SIZE: 12, REVERB_LEVEL: 40, MOD_LEVEL: 60, MOD_SPEED: 50 },
-      globals: { 1: 1, 16: 1, 28: 0, 29: 3, 30: 5 } });
+    if (o.a === "demo" || o.a === "connect") Object.assign(S, { connected: true, demo: true, ready: true, link: "Demo amp (browser preview)", model: "ID:Core V4", version: "1.0.4", slot: 3,
+      names: ["Classic Clean","Boutique Clean","Classic Crunch","Modern Drive","Smooth Solo","Tight Metal Rhythm"],
+      values: { VOICE: 2, GAIN: 70, VOLUME: 50, BASS: 72, MIDDLE: 58, TREBLE: 80, ISF: 64, RESONANCE: 50, PRESENCE: 76, DELAY_ON: 1, REVERB_ON: 1, FX_FOCUS: 3, DELAY_TYPE: 1, DELAY_FEEDBACK: 10, DELAY_LEVEL: 40, DELAY_TIME: 400, REVERB_SIZE: 12, REVERB_LEVEL: 40, MOD_LEVEL: 60, MOD_SPEED: 50, MOD_DEPTH: 40, GATE_AMOUNT: 30, GATE_SENS: 25 },
+      globals: { 1: 1, 29: 1, 30: 4 } });
     else if (o.a === "set") S.values[o.c] = o.v;
-    else if (o.a === "global") { S.globals[o.id] = o.v; if (o.id === 17) S.tuner = { on: o.v === 1, note: "A", cents: -8 }; }
+    else if (o.a === "global") S.globals[o.id] = o.v;
+    else if (o.a === "tuner") { S.tunerOn = o.on; S.tuner = o.on ? { on: true, note: "A", cents: -8, hz: 109.5, source: "audio" } : { on: false, note: "", cents: 0, hz: 0, source: "" }; }
     else if (o.a === "patch") { S.slot = o.slot; S.values.VOICE = o.slot - 1; }
+    else if (o.a === "songLoad") { const x = SONGS.find(s => s.id === o.id); if (x) Object.assign(S.values, x.values); }
     else if (o.a === "stomp") { const on = ["MOD_ON","DELAY_ON","REVERB_ON"][o.fx - 1], f = S.values.FX_FOCUS || 0;
       if (!S.values[on]) { S.values[on] = 1; S.values.FX_FOCUS = o.fx; } else if (f !== o.fx) S.values.FX_FOCUS = o.fx; else { S.values[on] = 0; S.values.FX_FOCUS = 0; } }
     else if (o.a === "libSave") LIB.unshift({ id: Date.now(), name: o.name, genre: o.genre, kind: "patch", voice: VOICES[S.values.VOICE] });
@@ -969,7 +1069,8 @@ const Mock = {
     renderAll(); renderLib();
   },
 };
-renderAll(); renderLib();
+if (!NATIVE) fetch("../presets/songs.json").then(r => r.json()).then(PT.onSongs).catch(() => {});
+renderAll(); renderLib(); renderSongs();
 if (!NATIVE) {   // preview links: #demo, #tab=stage, #y=600
   const h = location.hash;
   if (h.includes("demo")) Mock.handle({ a: "demo" });

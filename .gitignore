@@ -25,3 +25,6 @@ screen shot referece/
 # USB logs and screenshots from testing
 captures/
 tools/
+
+# Community patches downloaded with Architect: other players' work, bundled only into local builds
+app/app/src/main/assets/community/

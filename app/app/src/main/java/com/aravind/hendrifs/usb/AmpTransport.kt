@@ -4,7 +4,7 @@ package com.aravind.hendrifs.usb
 interface AmpTransport {
     val description: String
     fun write(packet: ByteArray)
-    /** Returns one incoming packet, or null if none arrived within ~40 ms. Throws if the link died. */
+    /** Returns one incoming packet, or null if none arrived within ~8 ms. Throws if the link died. */
     fun read(): ByteArray?
     fun close()
 }

@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hendrifs Engineering Notebook</title>
+<style>
+:root {
+  --bg: #faf8f4; --ink: #1d1b18; --dim: #615b52; --rule: #e2dcd0; --card: #fffdf9;
+  --accent: #a8741a; --accent-soft: #f4e7cc; --code-bg: #1e1c19; --code-ink: #ece6da;
+  --k: #e6b765; --s: #9fd28a; --c: #8d877b; --n: #f0937a; --ok: #2f7d4f; --bad: #b0412e; --warn: #8a6410;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #141311; --ink: #ebe6dc; --dim: #a39c90; --rule: #2e2b27; --card: #1b1917; --accent: #e3b45c; --accent-soft: #2e2615; --code-bg: #0e0d0c; --ok: #6cc28f; --bad: #e98670; --warn: #e0b85a; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16.5px/1.62 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { padding: 40px 18px 80px; }
+.text, h1, h2, h3, header dl, .lead, ul, ol, p, .note, table.tight { max-width: 70ch; margin-left: auto; margin-right: auto; }
+.wide { max-width: 1000px; margin: 22px auto; }
+h1 { font-size: 2.2rem; line-height: 1.15; margin: 0 auto 8px; letter-spacing: -.01em; }
+h2 { font-size: 1.45rem; margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--rule); }
+h2 .n { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: 8px; }
+h3 { font-size: 1.1rem; margin-top: 30px; }
+header dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 16px; font-size: .92rem; color: var(--dim); margin-top: 14px; }
+header dt { font-weight: 600; color: var(--ink); }
+header dd { margin: 0; }
+.lead { font-size: 1.12rem; }
+code { font: .9em ui-monospace, "Cascadia Code", Consolas, monospace; background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; }
+pre { background: var(--code-bg); color: var(--code-ink); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font: 13.5px/1.55 ui-monospace, "Cascadia Code", Consolas, monospace; margin: 0; }
+pre code { background: none; padding: 0; color: inherit; }
+.k { color: var(--k); } .s { color: var(--s); } .c { color: var(--c); font-style: italic; } .nn { color: var(--n); }
+.snip { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.snip .why { font-size: .93rem; color: var(--dim); border-left: 3px solid var(--accent); padding-left: 12px; }
+.snip .why p { margin: 0 0 10px; max-width: none; }
+.snip .why b { color: var(--ink); }
+@media (max-width: 760px) { .snip { grid-template-columns: 1fr; } }
+.note { background: var(--accent-soft); border-radius: 8px; padding: 12px 16px; font-size: .95rem; }
+.note b:first-child { color: var(--accent); }
+figure { margin: 0; }
+figcaption { font-size: .88rem; color: var(--dim); text-align: center; margin-top: 6px; }
+svg text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.bytes { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.byte { text-align: center; min-width: 92px; }
+.byte .v { font: 600 1.35rem ui-monospace, Consolas, monospace; background: var(--card); border: 2px solid var(--rule); border-radius: 8px; padding: 8px 6px; }
+.byte.h .v { border-color: var(--accent); }
+.byte.junk .v { border-style: dashed; color: var(--dim); }
+.byte .l { font-size: .8rem; color: var(--dim); margin-top: 4px; line-height: 1.25; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 600; color: var(--dim); font-size: .82rem; text-transform: uppercase; letter-spacing: .05em; }
+td code { white-space: nowrap; }
+.bug { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 18px 20px; margin: 18px auto; max-width: 1000px; }
+.bug h3 { margin: 0 0 10px; max-width: none; }
+.bug .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.bug .grid3 > div { font-size: .93rem; }
+.bug .grid3 b { display: block; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
+.sym b { color: var(--bad); } .cause b { color: var(--warn); } .fix b { color: var(--ok); }
+.bug .lesson { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--rule); font-size: .93rem; }
+@media (max-width: 760px) { .bug .grid3 { grid-template-columns: 1fr; } }
+.strip { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; counter-reset: st; }
+.strip > div { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 12px; font-size: .9rem; counter-increment: st; }
+.strip > div::before { content: counter(st); display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: var(--bg); font-weight: 700; font-size: .8rem; margin-bottom: 6px; }
+.strip b { display: block; }
+@media (max-width: 760px) { .strip { grid-template-columns: 1fr 1fr; } }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.two > div { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 16px; font-size: .93rem; }
+.two h4 { margin: 0 0 6px; }
+@media (max-width: 760px) { .two { grid-template-columns: 1fr; } }
+.skills { columns: 2; column-gap: 30px; max-width: 1000px; margin: 0 auto; }
+.skills li { break-inside: avoid; margin-bottom: 8px; }
+@media (max-width: 760px) { .skills { columns: 1; } }
+footer { max-width: 70ch; margin: 60px auto 0; color: var(--dim); font-size: .85rem; border-top: 1px solid var(--rule); padding-top: 12px; }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Hendrifs: what you built, and the engineering behind it</h1>
+  <dl>
+    <dt>Date</dt><dd>2026-11-19</dd>
+    <dt>Input shape</dt><dd>concept</dd>
+    <dt>Subject</dt><dd>The Hendrifs Android app for the Blackstar ID:Core V4, from USB basics to every bug we fixed (repo state at commit 34d0933 plus the uncommitted work of 17–19 Nov 2026)</dd>
+  </dl>
+</header>
+
+<p class="lead" style="margin-top:26px">You started with an app that talked to your amp using a <em>guessed</em> protocol. It produced wrong values, lag, snap-back, disconnects and a dead tuner. You ended with an app driven by a protocol you <em>measured</em> on the real amp, with tests built from real captured bytes. This page goes through it layer by layer, from the USB cable up to the knob under your finger. For each layer it covers what the thing is, how ours works, and which bug taught us that.</p>
+
+<!-- ============================================================ -->
+<h2><span class="n">01</span>The whole system in one picture</h2>
+<p>Each layer has one job and talks only to its neighbours. When something breaks, this map is how you work out which layer to look in.</p>
+
+<figure class="wide">
+<svg viewBox="0 0 1000 300" width="100%" role="img" aria-label="Architecture: amp, USB, transport, controller, activity, WebView">
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#a8741a"/></marker></defs>
+  <g font-size="13" fill="currentColor">
+    <rect x="10" y="95" width="130" height="110" rx="10" fill="none" stroke="#a8741a" stroke-width="2"/>
+    <text x="75" y="125" text-anchor="middle" font-weight="700">ID:Core V4</text>
+    <text x="75" y="147" text-anchor="middle" font-size="11.5">firmware 1.0.4</text>
+    <text x="75" y="165" text-anchor="middle" font-size="11.5">USB 27D4:0013</text>
+    <text x="75" y="183" text-anchor="middle" font-size="11.5">HID + audio</text>
+
+    <rect x="190" y="95" width="150" height="110" rx="10" fill="none" stroke="#8d877b" stroke-width="2"/>
+    <text x="265" y="125" text-anchor="middle" font-weight="700">UsbHidTransport</text>
+    <text x="265" y="147" text-anchor="middle" font-size="11.5">claims HID only</text>
+    <text x="265" y="165" text-anchor="middle" font-size="11.5">write() / read()</text>
+    <text x="265" y="183" text-anchor="middle" font-size="11.5">64-byte reports</text>
+
+    <rect x="390" y="80" width="170" height="140" rx="10" fill="none" stroke="#8d877b" stroke-width="2"/>
+    <text x="475" y="108" text-anchor="middle" font-weight="700">AmpController</text>
+    <text x="475" y="130" text-anchor="middle" font-size="11.5">worker thread loop</text>
+    <text x="475" y="148" text-anchor="middle" font-size="11.5">IdCoreProtocol parse</text>
+    <text x="475" y="166" text-anchor="middle" font-size="11.5">coalesce + echo guard</text>
+    <text x="475" y="184" text-anchor="middle" font-size="11.5">StateFlow&lt;AmpState&gt;</text>
+    <text x="475" y="202" text-anchor="middle" font-size="11.5">StateFlow&lt;TunerState&gt;</text>
+
+    <rect x="610" y="95" width="150" height="110" rx="10" fill="none" stroke="#8d877b" stroke-width="2"/>
+    <text x="685" y="125" text-anchor="middle" font-weight="700">MainActivity</text>
+    <text x="685" y="147" text-anchor="middle" font-size="11.5">collects flows</text>
+    <text x="685" y="165" text-anchor="middle" font-size="11.5">diffs → JSON</text>
+    <text x="685" y="183" text-anchor="middle" font-size="11.5">Bridge (JS → Kotlin)</text>
+
+    <rect x="810" y="95" width="180" height="110" rx="10" fill="none" stroke="#a8741a" stroke-width="2"/>
+    <text x="900" y="125" text-anchor="middle" font-weight="700">WebView: index.html</text>
+    <text x="900" y="147" text-anchor="middle" font-size="11.5">knobs, pedals, tuner</text>
+    <text x="900" y="165" text-anchor="middle" font-size="11.5">dirty-set render</text>
+    <text x="900" y="183" text-anchor="middle" font-size="11.5">one frame at a time</text>
+
+    <line x1="140" y1="135" x2="186" y2="135" stroke="#a8741a" stroke-width="2" marker-end="url(#ar)"/>
+    <line x1="190" y1="165" x2="144" y2="165" stroke="#a8741a" stroke-width="2" marker-end="url(#ar)"/>
+    <line x1="340" y1="135" x2="386" y2="135" stroke="#a8741a" stroke-width="2" marker-end="url(#ar)"/>
+    <line x1="390" y1="165" x2="344" y2="165" stroke="#a8741a" stroke-width="2" marker-end="url(#ar)"/>
+    <line x1="560" y1="135" x2="606" y2="135" stroke="#a8741a" stroke-width="2" marker-end="url(#ar)"/>
+    <line x1="610" y1="165" x2="564" y2="165" stroke="#a8741a" stroke-width="2" marker-end="url(#ar)"/>
+    <line x1="760" y1="135" x2="806" y2="135" stroke="#a8741a" stroke-width="2" marker-end="url(#ar)"/>
+    <line x1="810" y1="165" x2="764" y2="165" stroke="#a8741a" stroke-width="2" marker-end="url(#ar)"/>
+
+    <text x="163" y="80" text-anchor="middle" font-size="11">USB-C OTG</text>
+    <text x="365" y="80" text-anchor="middle" font-size="11">bytes</text>
+    <text x="585" y="70" text-anchor="middle" font-size="11">state</text>
+    <text x="785" y="80" text-anchor="middle" font-size="11">PT.onState()</text>
+    <text x="785" y="235" text-anchor="middle" font-size="11">HendrifsNative.send()</text>
+
+    <rect x="390" y="245" width="170" height="44" rx="8" fill="none" stroke="#8d877b" stroke-dasharray="4 3"/>
+    <text x="475" y="263" text-anchor="middle" font-size="11.5" font-weight="700">TunerAudio (YIN)</text>
+    <text x="475" y="280" text-anchor="middle" font-size="11">amp's USB audio → pitch</text>
+    <line x1="475" y1="245" x2="475" y2="224" stroke="#a8741a" stroke-width="2" marker-end="url(#ar)"/>
+  </g>
+</svg>
+<figcaption>Data flows right as state and left as commands. The tuner has a second input: the amp's own audio stream.</figcaption>
+</figure>
+
+<p>In words: the amp and phone exchange 64-byte packets over USB. <code>UsbHidTransport</code> only moves bytes and knows nothing about what they mean. <code>IdCoreProtocol</code> is pure functions that turn bytes into meaning and back. <code>AmpController</code> owns the live state and the timing: what to send, when, and which incoming packets to ignore. <code>MainActivity</code> turns that state into small JSON updates for the WebView. <code>index.html</code> draws the amp and sends your taps back as JSON commands. Keeping the protocol pure and separate from I/O is what let us unit-test it with no amp attached.</p>
+
+<!-- ============================================================ -->
+<h2><span class="n">02</span>USB basics you now actually use</h2>
+<p><b>Point:</b> a USB device is a bundle of <em>interfaces</em>, and each interface has <em>endpoints</em>, which are one-way pipes. Your amp shows up as several interfaces: audio in and out (so it can be a sound card) plus one <b>HID</b> interface for control. The app claims <em>only</em> the HID interface, so Android's audio stack keeps the sound-card side.</p>
+<table class="tight">
+<tr><th>Term</th><th>What it means here</th></tr>
+<tr><td>VID / PID</td><td><code>27D4</code> = Blackstar, <code>0013</code> = ID:Core V4. That's how the app recognises the amp when it's plugged in.</td></tr>
+<tr><td>HID</td><td>"Human Interface Device", the class used by keyboards and game pads. Vendors like it because the OS needs no special driver. Data moves in fixed-size <b>reports</b>, here 64 bytes.</td></tr>
+<tr><td>Interrupt IN endpoint</td><td>The amp → phone pipe. The host polls it, and we queue a read and wait up to 8 ms for it to finish (<code>requestWait(8)</code>).</td></tr>
+<tr><td>Interrupt OUT / SET_REPORT</td><td>Two ways to send phone → amp. We try the OUT endpoint first and fall back to a HID control transfer.</td></tr>
+<tr><td>OTG</td><td>"On-The-Go" lets the phone act as the USB <em>host</em>. Android exposes this through <code>UsbManager</code> and needs a permission prompt.</td></tr>
+</table>
+
+<div class="snip wide">
+<pre><code><span class="k">override fun</span> write(packet: ByteArray) {
+    <span class="c">// Prefer the interrupt OUT endpoint; fall back to HID SET_REPORT.</span>
+    <span class="k">var</span> n = epOut?.let { connection.bulkTransfer(it, packet, packet.size, <span class="nn">250</span>) } ?: -<span class="nn">1</span>
+    <span class="k">if</span> (n &lt; <span class="nn">0</span>) n = connection.controlTransfer(<span class="nn">0x21</span>, <span class="nn">0x09</span>, <span class="nn">0x0200</span>, hid.id, packet, packet.size, <span class="nn">250</span>)
+    <span class="k">if</span> (n != packet.size) <span class="k">throw</span> IOException(<span class="s">"USB write failed ($n/${packet.size})"</span>)
+}
+
+<span class="k">override fun</span> read(): ByteArray? {
+    <span class="k">if</span> (!queued) { buffer.clear(); request.queue(buffer); queued = <span class="k">true</span> }
+    <span class="k">val</span> done = <span class="k">try</span> { connection.requestWait(<span class="nn">8</span>) } <span class="k">catch</span> (_: TimeoutException) { <span class="k">return null</span> }
+        ?: <span class="k">throw</span> IOException(<span class="s">"USB connection lost"</span>)
+    ...
+}</code></pre>
+<div class="why">
+<p><b>controlTransfer(0x21, 0x09, 0x0200 …)</b> is the standard HID request "SET_REPORT, output report, id 0", spelled out as raw numbers. Any HID device accepts it.</p>
+<p><b>A short timeout instead of blocking forever</b> means <code>read()</code> returns <code>null</code> after 8 ms of silence, so the worker loop can go back and send your next knob change. This is the fix for "reads starve writes" (bug 3).</p>
+<p><b>Errors become exceptions.</b> A <code>null</code> from <code>requestWait</code> means the cable is gone. The controller catches that one exception and starts reconnecting.</p>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<h2><span class="n">03</span>Reverse engineering: how we learned the language</h2>
+<p><b>Point:</b> the old code was copied from notes about the V1/V2 amps and never checked on a V4, and every symptom traced back to that. Reverse engineering is not magic. It's the scientific method applied to bytes: <b>observe, form a hypothesis, test by sending, confirm by reading back</b>.</p>
+
+<div class="strip wide">
+  <div><b>Watch the amp</b><code>probe.py</code> (Python + hidapi) sent the startup packet and printed every report while you turned each physical knob.</div>
+  <div><b>Watch the official app</b>USBPcap's driver wouldn't start, so we hooked Windows' <code>WriteFile</code> inside Architect with Frida and logged every packet it sent.</div>
+  <div><b>Change one thing at a time</b>One knob or one button per step, so each new packet maps to exactly one control.</div>
+  <div><b>Form the rule</b>The packets all fit one pattern: <code>kind · first id · 00 · count · values</code>.</div>
+  <div><b>Prove it</b>We sent our own packets from the PC, read the amp's state back, and listened to the result.</div>
+</div>
+<p>Here is the strip as text. Watching from the amp's side showed which byte each knob changes. Watching from Architect's side showed the commands only the PC sends, such as storing a patch, the tuner and patch names. Changing one variable per step is what made the captures readable. The rule we inferred was then tested by writing to the amp and reading it back.</p>
+
+<h3>Anatomy of one packet: "set gain to 90"</h3>
+<div class="wide bytes">
+  <div class="byte h"><div class="v">03</div><div class="l">kind<br>03 = sound param</div></div>
+  <div class="byte h"><div class="v">02</div><div class="l">first id<br>02 = Gain</div></div>
+  <div class="byte"><div class="v">00</div><div class="l">always 0</div></div>
+  <div class="byte h"><div class="v">01</div><div class="l">count<br>1 value follows</div></div>
+  <div class="byte"><div class="v">5A</div><div class="l">value<br>0x5A = 90</div></div>
+  <div class="byte junk"><div class="v">?? ??</div><div class="l">bytes 5–63<br>leftover memory: ignore</div></div>
+</div>
+<p>The same rule covers everything. <code>03 02 00 01 5A</code> is one knob. <code>03 01 00 2A …42 values</code> is the <em>whole</em> sound, ids 1 to 42 in a row. <code>08 11 00 01 01</code> is kind 08 (amp-wide settings), id 0x11 (tuner), value 1, which means "tuner on". Once you know the rule, a new command is just a new id, and no new code path is needed.</p>
+
+<div class="note"><b>The junk-bytes trap.</b> The amp doesn't zero its buffer, so bytes after <code>4 + count</code> hold whatever was there before. If you decode the whole 64 bytes, you read "values" that change at random. That alone produces "wrong values shown". The parser only reads up to the declared count, and patch names stop at the first NUL byte. A unit test (<code>withJunk</code>) fills the tail with garbage on purpose to prove this.</div>
+
+<h3>The two other surprises in the captures</h3>
+<ul>
+<li><b>The amp echoes everything.</b> Every command you send comes straight back as if the amp's own knob had moved. Without handling this, the screen fights you (bug 2).</li>
+<li><b>The amp repeats knob reports about every 10 ms</b> while a knob moves. If you redraw on every one of them, the UI chokes.</li>
+</ul>
+
+<h3>What we decoded (the short version)</h3>
+<table class="wide">
+<tr><th>Direction</th><th>Bytes</th><th>Meaning</th></tr>
+<tr><td>app → amp</td><td><code>81 00 00 04 03 06 02 7A</code></td><td>Handshake. The amp replies with version, live sound, globals and selected patch.</td></tr>
+<tr><td>app → amp</td><td><code>03 &lt;id&gt; 00 01 &lt;v&gt;</code></td><td>Set one parameter. Delay time is the only 2-byte value: <code>03 1B 00 02 lo hi</code>, 100–1000 ms.</td></tr>
+<tr><td>app → amp</td><td><code>02 01 &lt;slot&gt; 00</code></td><td>Select patch 1–6.</td></tr>
+<tr><td>app → amp</td><td><code>02 02 slot len name</code> then <code>02 03 slot 2B +43</code></td><td>Store a patch: name packet, then 43 parameter bytes.</td></tr>
+<tr><td>app → amp</td><td><code>08 11 00 01 01 / 00</code></td><td>Tuner on / off.</td></tr>
+<tr><td>amp → app</td><td><code>07 00 00 03 01 00 04</code></td><td>Firmware 1.0.4.</td></tr>
+<tr><td>amp → app</td><td><code>02 06 slot 3C …</code></td><td>Patch selected (the voice knob on the amp does this).</td></tr>
+<tr><td>amp → app</td><td><code>09 note cents+50 …</code></td><td>Tuner reading, about 10 per second. Note 0 = no signal.</td></tr>
+</table>
+<p>The full table is in <code>research/V4-PROTOCOL.md</code>. One rule from the hardware shaped the UI: <b>each voice owns one patch slot</b> (slot = voice + 1). That's why tapping a voice lamp selects a patch, and why "Store to amp" picks the slot for you.</p>
+
+<!-- ============================================================ -->
+<h2><span class="n">04</span>The protocol layer: pure functions you can test</h2>
+<div class="snip wide">
+<pre><code><span class="k">enum class</span> Control(<span class="k">val</span> id: Int, <span class="k">val</span> min: Int, <span class="k">val</span> max: Int, <span class="k">val</span> twoBytes: Boolean = <span class="k">false</span>) {
+    VOICE(<span class="nn">0x01</span>, <span class="nn">0</span>, <span class="nn">5</span>),
+    GAIN(<span class="nn">0x02</span>, <span class="nn">0</span>, <span class="nn">127</span>),
+    ...
+    DELAY_TIME(<span class="nn">0x1B</span>, <span class="nn">100</span>, <span class="nn">1000</span>, twoBytes = <span class="k">true</span>),
+    GATE_AMOUNT(<span class="nn">0x27</span>, <span class="nn">0</span>, <span class="nn">127</span>);
+}
+
+<span class="k">fun</span> setControl(c: Control, value: Int): ByteArray {
+    <span class="k">val</span> v = value.coerceIn(c.min, c.max)
+    <span class="k">return if</span> (c.twoBytes) pad(<span class="nn">0x03</span>, c.id, <span class="nn">0x00</span>, <span class="nn">0x02</span>, v <span class="k">and</span> <span class="nn">0xFF</span>, v <span class="k">shr</span> <span class="nn">8</span>)
+    <span class="k">else</span> pad(<span class="nn">0x03</span>, c.id, <span class="nn">0x00</span>, <span class="nn">0x01</span>, v)
+}
+
+<span class="k">fun</span> parse(p: ByteArray): Event = <span class="k">when</span> {
+    b0 == <span class="nn">0x03</span> &amp;&amp; b2 == <span class="nn">0</span> &amp;&amp; n <span class="k">in</span> <span class="nn">1</span>..<span class="nn">60</span> -&gt; Event.Params(b1, block(p, n), whole = b1 == <span class="nn">1</span> &amp;&amp; n &gt;= <span class="nn">0x29</span>)
+    b0 == <span class="nn">0x08</span> ... -&gt; Event.Globals(b1, block(p, n))
+    b0 == <span class="nn">0x09</span> -&gt; Event.TunerReading(note, name, cents = b2 - <span class="nn">50</span>)
+    ...
+    <span class="k">else</span> -&gt; Event.Unknown(p)
+}</code></pre>
+<div class="why">
+<p><b>The table is the protocol.</b> Every id, range and the one 2-byte value sit in one enum. Fixing "wrong values" mostly meant correcting rows here.</p>
+<p><b>coerceIn clamps</b> at the edge, so a bug in the UI can never send 500 to a 0–127 knob.</p>
+<p><b>Little-endian:</b> 1000 ms = 0x03E8 is sent as <code>E8 03</code>, low byte first.</p>
+<p><b>A sealed Event type</b> means the rest of the app pattern-matches on meaning, never on raw bytes. Anything unrecognised becomes <code>Unknown</code> and is logged, not thrown.</p>
+</div>
+</div>
+
+<p><b>Golden-byte tests.</b> The 17 protocol tests use byte strings captured from the real amp and from Architect. One example is <code>storeMatchesArchitectByteForByte</code>: we read patch 1 from the amp, built the store packets, and asserted they equal what Architect sends, byte for byte. If someone "cleans up" the encoder later and breaks it, a test fails on the laptop, not on stage.</p>
+
+<!-- ============================================================ -->
+<h2><span class="n">05</span>The bugs, and what each one teaches</h2>
+<p>Each card gives the symptom you saw, the real cause, and the fix. The lesson line is the part to keep for other projects.</p>
+
+<div class="bug">
+<h3>1 · Loading a preset made the amp go silent</h3>
+<div class="grid3">
+  <div class="sym"><b>Symptom</b>Tap a song preset and the amp goes quiet.</div>
+  <div class="cause"><b>Cause</b>We loaded presets by sending the whole sound block (<code>03 01 00 2B</code> + 43 bytes). Byte 3 of that block is <em>volume</em>, and our presets had it as 0. The amp obeyed: volume zero. Separately, the store path wrote volume 0 into saved patches, which made them silent too.</div>
+  <div class="fix"><b>Fix</b><code>apply()</code> now sends each control on its own (<code>03 id 00 01 v</code>), voice first, and never sends volume. Storing keeps the patch's real volume, falling back to the live one, then a safe default (0x41).</div>
+</div>
+<div class="lesson"><b>Lesson:</b> in a binary protocol every byte you send is a command. There is no "unset". If you don't own a field's value, don't write that field. Writing the whole block was convenient and wrong.</div>
+</div>
+
+<div class="bug">
+<h3>2 · Knobs snapped back while you dragged</h3>
+<div class="grid3">
+  <div class="sym"><b>Symptom</b>Drag gain from 40 to 90 and it flickers back to 50-something, then jumps.</div>
+  <div class="cause"><b>Cause</b>The amp echoes every command. By the time the echo of "gain = 52" arrives, your finger is already at 70. The app trusted the echo and moved the knob back.</div>
+  <div class="fix"><b>Fix</b>An <b>echo guard</b>: when you change a control, the app records <code>localUntil[id] = now + 500 ms</code>. Single-knob reports for that id inside the window are ignored. Full-sound reports (a patch change) still win, and they clear all guards.</div>
+</div>
+<div class="lesson"><b>Lesson:</b> when two sources can write the same value (your finger and the device), decide on purpose who wins and for how long. This is the same problem as optimistic UI in web apps.</div>
+</div>
+
+<div class="bug">
+<h3>3 · Lag and stutter</h3>
+<div class="grid3">
+  <div class="sym"><b>Symptom</b>Knobs lag, the tuner stutters, and taps sometimes get lost.</div>
+  <div class="cause"><b>Cause</b>Four costs stacked up:
+    <ul style="margin:4px 0 0;padding-left:18px">
+      <li>every packet copied a 3000-line log into state</li>
+      <li>every change pushed the <em>whole</em> state as JSON</li>
+      <li>the page rebuilt every button with <code>innerHTML</code>, even under your finger</li>
+      <li>the worker sent the whole outbox before reading, so reads starved</li>
+    </ul>
+  </div>
+  <div class="fix"><b>Fix</b>
+    <ul style="margin:4px 0 0;padding-left:18px">
+      <li>The log moved to a ring buffer that is read only when the console opens.</li>
+      <li><b>Coalescing:</b> only the latest value per control is kept, sent at most every 25 ms.</li>
+      <li>The worker alternates one write with one read.</li>
+      <li>Kotlin pushes only changed fields.</li>
+      <li>JS redraws only "dirty" parts, once per animation frame.</li>
+    </ul>
+  </div>
+</div>
+<div class="lesson"><b>Lesson:</b> performance problems are usually <em>work you didn't need to do</em>, not slow code. Look for anything done per event (per packet, per frame) and ask: "does this need to happen at this rate, at this size?"</div>
+</div>
+
+<div class="snip wide">
+<pre><code><span class="c">// set(): your finger. Store the newest value; overwrite older ones.</span>
+pendingControls[c] = v                          <span class="c">// a map, not a queue</span>
+
+<span class="c">// worker: one write, then one read, forever</span>
+<span class="k">while</span> (running &amp;&amp; gen == generation) {
+    <span class="k">val</span> out = outbox.poll() ?: nextControlPacket()
+    <span class="k">if</span> (out != <span class="k">null</span>) { t.write(out); Thread.sleep(WRITE_GAP_MS) }
+    <span class="k">val</span> p = t.read()                             <span class="c">// ≤ 8 ms</span>
+    <span class="k">if</span> (p != <span class="k">null</span>) handle(p)
+}
+
+<span class="k">private fun</span> nextControlPacket(): ByteArray? {
+    <span class="k">for</span> ((c, v) <span class="k">in</span> pendingControls) {
+        <span class="k">if</span> (now - (lastSent[c] ?: <span class="nn">0</span>) &lt; CONTROL_GAP_MS) <span class="k">continue</span>
+        <span class="k">if</span> (pendingControls.remove(c, v)) <span class="k">return</span> setControl(c, v)
+    }
+    <span class="k">return null</span>
+}</code></pre>
+<div class="why">
+<p><b>Map instead of queue = coalescing.</b> A drag produces 60 values a second. A queue would send all 60, late. A map keeps only the newest, so the amp always gets where your finger <em>is</em>.</p>
+<p><b><code>remove(c, v)</code></b> is atomic: it removes the entry only if it still holds <code>v</code>. If your finger moved in between, the newer value stays queued. That's a small lock-free concurrency trick.</p>
+<p><b>Commands that must keep their order</b> (patch select, store, handshake) go through a separate FIFO <code>outbox</code>. Knob values can be dropped; commands can't.</p>
+<p><b><code>gen == generation</code></b> means that after a reconnect, an old worker thread notices it's stale and exits instead of writing to a dead cable.</p>
+</div>
+</div>
+
+<div class="bug">
+<h3>4 · Disconnects that never recovered</h3>
+<div class="grid3">
+  <div class="sym"><b>Symptom</b>A cable wiggle or a missed handshake left the app dead until restart.</div>
+  <div class="cause"><b>Cause</b>There was no retry and no reconnect, and errors surfaced as raw exception toasts.</div>
+  <div class="fix"><b>Fix</b>
+    <ul style="margin:4px 0 0;padding-left:18px">
+      <li>The handshake is resent up to 4 times, 1.2 s apart, then one plain-language message.</li>
+      <li>On link loss, the app reconnects with <b>exponential backoff</b> (1 s, 2 s, 4 s).</li>
+      <li>It reattaches on <code>ACTION_USB_DEVICE_ATTACHED</code>.</li>
+      <li>A crash handler and a <code>runCatching</code> around each UI command keep one bad input from killing the app.</li>
+    </ul>
+  </div>
+</div>
+<div class="lesson"><b>Lesson:</b> design for failure as a normal state. Every I/O link needs an answer to "what happens when this goes away?", and the user-facing message should say what to <em>do</em>.</div>
+</div>
+
+<div class="bug">
+<h3>5 · The tuner did nothing</h3>
+<div class="grid3">
+  <div class="sym"><b>Symptom</b>The tuner page stayed blank.</div>
+  <div class="cause"><b>Cause</b>The tuner command and reading format were guessed. Once captured, they turned out to be <code>08 11 00 01 01</code> and <code>09 note cents+50</code>. A first fix then let the phone's pitch detector permanently block the amp's readings.</div>
+  <div class="fix"><b>Fix</b>The real tuner command, plus a second source: YIN pitch detection on the amp's USB audio. The two are arbitrated by <b>recency</b>: whichever produced a note in the last 400 ms is shown.</div>
+</div>
+<div class="lesson"><b>Lesson:</b> when you merge two sources, don't hard-code a priority. Pick the one that is <em>currently alive</em>. Also be honest about what's unverified: the amp's USB audio arrived as digital silence in our PC test, so the phone-side tuner isn't proven yet.</div>
+</div>
+
+<!-- ============================================================ -->
+<h2><span class="n">06</span>Threads and state: who touches what</h2>
+<p><b>Point:</b> three threads are involved, and the rules are simple. The USB worker owns the I/O. A lock guards the shared byte tables. The UI only ever reads immutable snapshots.</p>
+<div class="two wide">
+  <div><h4>Worker thread (AmpController.loop)</h4>Blocking USB calls live here and never on the UI thread, because Android kills apps that block the main thread. It parses packets, updates <code>live[]</code> / <code>globals[]</code> under <code>synchronized(lock)</code>, then publishes a new <code>AmpState</code>.</div>
+  <div><h4>UI thread (MainActivity + WebView)</h4>It collects the <code>StateFlow</code>, diffs it against what was last sent, and calls <code>evaluateJavascript("PT.onState(...)")</code>. Taps come back through <code>@JavascriptInterface</code> on a <em>binder</em> thread, so the bridge hops to <code>runOnUiThread</code> before touching anything.</div>
+</div>
+<p><b>Why StateFlow:</b> it always holds the latest value, and a slow collector simply skips stale intermediate states. That's the right behaviour for a UI, because you want the current amp, not a replay of every step. The tuner has its <em>own</em> flow, so ten readings a second don't cause ten full-state diffs.</p>
+
+<!-- ============================================================ -->
+<h2><span class="n">07</span>Kotlin ↔ WebView bridge</h2>
+<p><b>Point:</b> the UI is a web page inside the app. HTML, CSS and SVG let us draw brushed-gold plates, rotary knobs and patch cables far faster than native views would. The cost is a hand-made message protocol between the two worlds.</p>
+<div class="snip wide">
+<pre><code><span class="c">// JS → Kotlin: one entry point, JSON commands</span>
+HendrifsNative.send(JSON.stringify({ a: <span class="s">"set"</span>, c: <span class="s">"GAIN"</span>, v: <span class="nn">90</span> }))
+
+<span class="c">// Kotlin → JS: only what changed</span>
+fields.forEach { (k, v) -&gt;
+    <span class="k">val</span> str = v.toString()
+    <span class="k">if</span> (sent[k] != str) { sent[k] = str; diff.put(k, v) }
+}
+<span class="k">if</span> (diff.length() &gt; <span class="nn">0</span>) js(<span class="s">"PT.onState($diff)"</span>)
+
+<span class="c">// JS: merge, mark dirty, draw once per frame</span>
+onState(d) { Object.assign(S, d); Object.keys(d).forEach(k =&gt; dirty.add(k)); scheduleRender(); }</code></pre>
+<div class="why">
+<p><b>One verb, many actions</b> (<code>a: "set" | "patch" | "songLoad" | "tuner" …</code>) keeps the native surface tiny and easy to audit.</p>
+<p><b>Diffing by string</b> is crude but correct: if the JSON text didn't change, the screen doesn't need to.</p>
+<p><b><code>requestAnimationFrame</code></b> batches any number of updates into one redraw per screen refresh. Buttons are built once and then only have classes toggled, so a tap is never lost to a rebuild.</p>
+<p><b>Browser preview:</b> with no native bridge, <code>index.html#demo</code> runs a tiny fake amp in JS. That's how we designed the voice lamps and the OnePlus Pad layouts on the PC.</p>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<h2><span class="n">08</span>Pitch detection: how YIN finds the note</h2>
+<p><b>Point:</b> a plucked string repeats its waveform every <em>period</em> T, and frequency = sample rate ÷ T. YIN finds T by asking: "if I shift the signal by τ samples, how different is it from itself?" At the true period, the difference drops close to zero.</p>
+<figure class="wide">
+<svg viewBox="0 0 1000 200" width="100%" role="img" aria-label="YIN difference curve with a dip at the period">
+  <g fill="none" stroke-width="2">
+    <line x1="60" y1="170" x2="960" y2="170" stroke="#8d877b"/>
+    <line x1="60" y1="20" x2="60" y2="170" stroke="#8d877b"/>
+    <line x1="60" y1="128" x2="960" y2="128" stroke="#b0412e" stroke-dasharray="5 4"/>
+    <path d="M60 30 C 110 20, 150 60, 200 90 S 260 160, 300 158 S 360 70, 420 60 S 520 100, 560 120 S 600 162, 640 160 S 720 70, 780 70 S 880 110, 960 140" stroke="#a8741a"/>
+    <circle cx="300" cy="158" r="6" fill="#a8741a" stroke="none"/>
+  </g>
+  <g font-size="13" fill="currentColor">
+    <text x="300" y="192" text-anchor="middle" font-weight="700">τ = period</text>
+    <text x="640" y="192" text-anchor="middle">2 × period (ignored: first dip wins)</text>
+    <text x="955" y="122" text-anchor="end" fill="#b0412e">threshold 0.12</text>
+    <text x="70" y="16">difference</text>
+    <text x="955" y="165" text-anchor="end">lag τ (samples) →</text>
+  </g>
+</svg>
+<figcaption>The first dip under the threshold is the period. Taking the first dip, not the deepest, avoids "octave errors".</figcaption>
+</figure>
+<div class="snip wide">
+<pre><code><span class="c">// 1. difference function</span>
+<span class="k">for</span> (tau <span class="k">in</span> <span class="nn">1</span>..maxLag) { d[tau] = Σ (x[i] - x[i + tau])² }
+<span class="c">// 2. cumulative mean normalised difference</span>
+cmnd[tau] = d[tau] * tau / (d[<span class="nn">1</span>] + … + d[tau])
+<span class="c">// 3. first tau under threshold, then slide to its local minimum</span>
+<span class="k">if</span> (cmnd[tau] &lt; <span class="nn">0.12</span>) { <span class="k">while</span> (cmnd[tau + <span class="nn">1</span>] &lt; cmnd[tau]) tau++; <span class="k">break</span> }
+<span class="c">// 4. parabolic interpolation → sub-sample precision</span>
+shift = (a - c) / (<span class="nn">2</span> * (a + c - <span class="nn">2</span> * b))
+<span class="k">return</span> rate / (tau + shift)
+
+<span class="c">// Hz → note + cents</span>
+midi  = <span class="nn">69</span> + <span class="nn">12</span> * log2(hz / <span class="nn">440</span>)
+cents = (midi - round(midi)) * <span class="nn">100</span></code></pre>
+<div class="why">
+<p><b>Normalising (step 2)</b> stops the curve from trivially reaching zero at τ = 0, so a fixed threshold works for any loudness.</p>
+<p><b>Lag range:</b> <code>rate/1400</code> to <code>rate/60</code> covers about 60 Hz (drop tunings) up to high frets. The code decimates audio to 24 kHz first, which halves the work.</p>
+<p><b>Interpolation matters:</b> at 24 kHz a low E's period is about 292 samples. Being off by one sample is roughly 6 cents, too coarse for a tuner. Fitting a parabola through the three points around the dip recovers the in-between value.</p>
+<p><b>A silence gate</b> (RMS &lt; 0.004) returns "no note" instead of guessing at noise.</p>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<h2><span class="n">09</span>.bstar files: parsing someone else's format safely</h2>
+<p><b>Point:</b> Architect saves patches as small XML documents (<code>&lt;Sound&gt;&lt;Amplifier&gt;&lt;Gain&gt;…</code>). We mapped each tag to a <code>Control</code> by loading a known patch (Mayer Gravity) through Architect and comparing the bytes it sent with the XML values.</p>
+<div class="snip wide">
+<pre><code><span class="k">val</span> f = DocumentBuilderFactory.newInstance().apply {
+    setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, <span class="k">true</span>)
+    setFeature(<span class="s">"…/disallow-doctype-decl"</span>, <span class="k">true</span>)
+    isExpandEntityReferences = <span class="k">false</span>
+}
+<span class="k">val</span> root = f.newDocumentBuilder().parse(input).documentElement
+require(root.tagName == <span class="s">"Sound"</span>) { <span class="s">"Not an Architect patch"</span> }
+put(Control.GAIN, num(amp, <span class="s">"Gain"</span>))     <span class="c">// clamps to min..max</span></code></pre>
+<div class="why">
+<p><b>Why disable DOCTYPE?</b> XML can define "entities" that pull in local files or expand into gigabytes (XXE, the "billion laughs" attack). Imported files come from strangers, so the parser refuses those features outright.</p>
+<p><b>Validate, then clamp.</b> We check the root tag, and every number goes through the same <code>min..max</code> clamp as a knob.</p>
+<p><b>Round-trip test:</b> <code>BstarFormatTest</code> parses a fixture and writes it back.</p>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<h2><span class="n">10</span>Build, tooling and the small things that bit</h2>
+<ul>
+<li><b>Gradle build output lives outside OneDrive</b> (<code>~/.gradle-builds/hendrifs</code>). OneDrive syncing locks files mid-build and causes random failures.</li>
+<li><b>Lint caught <code>local.properties</code></b>: Windows paths in a properties file need escaped backslashes (<code>C\:\\Users…</code>) and LF line endings.</li>
+<li><b>A Kotlin comment bug</b>: writing <code>assets/community/*.bstar</code> inside a KDoc opens a <em>nested</em> comment (<code>/*</code>) that never closes. The compiler error points far from the cause.</li>
+<li><b>A fake transport</b> (<code>FakeAmpTransport</code>) speaks the real V4 formats, including echoes, so demo mode behaves like the amp.</li>
+<li><b>Release pipeline:</b> <code>./gradlew testDebugUnitTest assembleRelease lintRelease</code>, then copy the APK to <code>Hendrifs.apk</code>.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2><span class="n">11</span>Still open: what isn't proven yet</h2>
+<p>A good engineer keeps this list as carefully as the done list.</p>
+<ul>
+<li>The latest build hasn't been run end to end on the OnePlus Pad with the amp. The phone reported patch switching failing earlier, and no USB log was captured.</li>
+<li>The phone-side YIN tuner depends on the amp's USB audio, which was silent in the PC test. The cause is unknown (possibly the amp's USB audio routing).</li>
+<li>CabRig and footswitch globals follow the confirmed <code>08 id 00 01 v</code> pattern, but haven't been tested one by one.</li>
+<li>The amp tuner's note numbering (1 = E …) came from a handful of readings, not a full chromatic sweep.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2><span class="n">12</span>What you can now say you know</h2>
+<ul class="skills">
+<li><b>USB device model:</b> interfaces, endpoints, HID reports, VID/PID, OTG host mode on Android.</li>
+<li><b>Protocol reverse engineering:</b> differential captures, one-variable-at-a-time experiments, API hooking when packet capture fails, confirming by write-and-read-back.</li>
+<li><b>Binary encoding:</b> length-prefixed blocks, little-endian multi-byte values, NUL-terminated strings, ignoring undefined trailing bytes.</li>
+<li><b>Real-time I/O design:</b> coalescing (latest-value-wins), separate FIFO for ordered commands, read/write interleaving, short timeouts.</li>
+<li><b>Two-writer conflicts:</b> echo suppression with time windows, authoritative full-state resets.</li>
+<li><b>Resilience:</b> handshake retry, exponential backoff, generation counters for stale threads, failure-aware messages.</li>
+<li><b>Concurrency on Android:</b> worker thread versus main thread, locks around shared tables, StateFlow conflation, binder-thread hops.</li>
+<li><b>Hybrid apps:</b> a JSON message bridge, diff-only pushes, dirty-set rendering on requestAnimationFrame.</li>
+<li><b>DSP:</b> YIN pitch detection, normalisation, parabolic interpolation, Hz to MIDI to cents.</li>
+<li><b>Safe parsing:</b> XXE-hardened XML, validate-then-clamp.</li>
+<li><b>Testing strategy:</b> golden-byte tests from real captures, adversarial fixtures (junk tails), fakes that mimic real device quirks.</li>
+<li><b>Debugging mindset:</b> every symptom ("silent", "jumps", "lags") traced to one mechanism, not patched over.</li>
+</ul>
+
+<p class="note" style="margin-top:28px"><b>How to keep growing from here:</b> pick one layer and rebuild it from memory without looking. The protocol parser is the best start because its tests will tell you when you're right. Then read <code>AmpController.loop</code> and explain to yourself, out loud, why each line exists. If you can explain it, you own it.</p>
+
+<footer>Composed 2026-11-19 by ce-explain · grounded in the Hendrifs source (<code>IdCoreProtocol.kt</code>, <code>AmpController.kt</code>, <code>UsbHidTransport.kt</code>, <code>MainActivity.kt</code>, <code>TunerAudio.kt</code>, <code>BstarFormat.kt</code>, <code>index.html</code>) and <code>research/V4-PROTOCOL.md</code>.</footer>
+</main>
+</body>
+</html>
